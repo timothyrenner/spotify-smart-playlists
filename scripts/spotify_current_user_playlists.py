@@ -1,3 +1,4 @@
+from spotipy import cache_handler
 import typer
 import os
 import spotipy
@@ -5,6 +6,7 @@ import spotipy
 from dotenv import load_dotenv, find_dotenv
 from loguru import logger
 from spotipy.oauth2 import SpotifyOAuth
+from github_file_cache_handler import CacheFileGithubHandler
 
 logger.info("Loading dotenv file.")
 load_dotenv(find_dotenv())
@@ -37,6 +39,7 @@ def main():
             client_secret=SPOTIFY_CLIENT_SECRET,
             redirect_uri=SPOTIFY_REDIRECT_URI,
             scope="playlist-read-private",
+            cache_handler=CacheFileGithubHandler(),
         )
     )
 
