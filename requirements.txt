@@ -2,9 +2,4 @@ flake8
 black
 mypy
 typer
-python-dotenv
-spotipy
-loguru
 python-dateutil
-ghapi
-pynacl

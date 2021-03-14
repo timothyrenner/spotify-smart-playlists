@@ -6,7 +6,9 @@ import spotipy
 from dotenv import load_dotenv, find_dotenv
 from loguru import logger
 from spotipy.oauth2 import SpotifyOAuth
-from github_file_cache_handler import CacheFileGithubHandler
+from spotify_smart_playlists.helpers.github_file_cache_handler import (
+    CacheFileGithubHandler,
+)
 
 logger.info("Loading dotenv file.")
 load_dotenv(find_dotenv())
