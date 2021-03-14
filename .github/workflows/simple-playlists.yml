@@ -36,7 +36,7 @@ jobs:
         run: python scripts/simple/create_rotating_playlist.py post-calm
 
       - name: Update post-not-calm
-        run: python scripts/simple/create_rotating_playlist.py post
+        run: python scripts/simple/create_rotating_playlist.py post-not-calm
 
       - name: Update punk-ish
         run: python scripts/simple/create_rotating_playlist.py punk-ish
