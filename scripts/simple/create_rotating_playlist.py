@@ -7,8 +7,8 @@ from loguru import logger
 from dotenv import load_dotenv, find_dotenv
 from spotipy.oauth2 import SpotifyOAuth
 from spotify_smart_playlists.helpers import CacheFileGithubHandler
-from toolz import pluck
-from random import sample
+from toolz import pluck, thread_first
+from random import sample, shuffle
 
 logger.info("Loading dotenv file.")
 load_dotenv(find_dotenv())
@@ -147,10 +147,26 @@ def main(
     # TODO: So if we only end up with 20 total tracks, add additional
     # TODO: recommendations to even out the track count of the playlist.
     num_tracks = 25
-    logger.info(f"Downsampling to {num_tracks} tracks.")
-    new_playlist_tracks = list(
-        sample(seed_playlist_non_recent_track_ids, num_tracks)
+    tracks_to_sample = min(
+        len(seed_playlist_non_recent_track_ids), num_tracks - 5
     )
+    logger.info(f"Downsampling to {tracks_to_sample} tracks.")
+    new_playlist_tracks = list(
+        sample(seed_playlist_non_recent_track_ids, tracks_to_sample)
+    )
+    recommendations_to_fetch = num_tracks - len(new_playlist_tracks)
+    recommendation_seed = thread_first(
+        new_playlist_tracks, (sample, min(len(new_playlist_tracks), 5)), list
+    )
+    logger.info(f"Fetching {recommendations_to_fetch} recommended tracks.")
+    recommended_tracks_response = spotify.recommendations(
+        seed_tracks=recommendation_seed, limit=recommendations_to_fetch
+    )
+
+    new_playlist_tracks += [
+        rt["id"] for rt in recommended_tracks_response["tracks"]
+    ]
+    shuffle(new_playlist_tracks)
 
     new_playlist_object = get_playlist(new_playlist, spotify)
     if not new_playlist_object:
