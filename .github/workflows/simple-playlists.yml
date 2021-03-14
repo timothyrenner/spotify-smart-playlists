@@ -28,8 +28,7 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install -e .
-          ls .cache
-          ls .
+          ls -alh .
 
       - name: Update synthwave-fast
         run: python scripts/simple/create_rotating_playlist.py synthwave-fast

@@ -121,6 +121,9 @@ def main(
             cache_handler=CacheFileGithubHandler(),
         )
     )
+    # DEBUG.
+    print(spotify.client_credentials_manager)
+    # END DEBUG.
 
     seed_playlist_object = get_playlist(seed_playlist, spotify)
 
