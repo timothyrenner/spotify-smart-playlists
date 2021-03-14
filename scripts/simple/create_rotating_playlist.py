@@ -168,7 +168,9 @@ def main(
     new_playlist_object = get_playlist(new_playlist, spotify)
     if not new_playlist_object:
         logger.info(f"Playlist {new_playlist} doesn't exist. Creating.")
-        spotify.user_playlist_create(spotify.me()["id"], new_playlist)
+        new_playlist_object = spotify.user_playlist_create(
+            spotify.me()["id"], new_playlist
+        )
 
     logger.info(f"Replacing tracks for {new_playlist}.")
     spotify.user_playlist_replace_tracks(
