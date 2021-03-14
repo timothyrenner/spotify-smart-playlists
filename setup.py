@@ -10,5 +10,6 @@ setup(
         "loguru",
         "ghapi",
         "pynacl",
+        "toolz",
     ],
 )

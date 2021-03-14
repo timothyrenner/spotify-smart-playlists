@@ -51,7 +51,7 @@ def main():
 
     items = results["items"]
     for item in items:
-        print(item["name"], item["tracks"])
+        print(item["name"], item["id"])
 
 
 if __name__ == "__main__":
