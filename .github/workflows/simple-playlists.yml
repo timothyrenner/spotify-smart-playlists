@@ -7,39 +7,39 @@ jobs:
   simple_playlists:
     runs-on: "ubuntu-latest"
 
-  steps:
-    - name: Checkout Code
-      uses: actions/checkout@v2
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
 
-    - name: Set up environment.
-      run: |
-        echo ${{ secrets.SPOTIFY_CREDENTIALS }} >> .cache
-        echo GH_SPOTIFY_ACCESS_TOKEN=${{ secrets.GH_SPOTIFY_ACCESS_TOKEN }} >> $GITHUB_ENV
+      - name: Set up environment.
+        run: |
+          echo ${{ secrets.SPOTIFY_CREDENTIALS }} >> .cache
+          echo GH_SPOTIFY_ACCESS_TOKEN=${{ secrets.GH_SPOTIFY_ACCESS_TOKEN }} >> $GITHUB_ENV
 
-    - name: Set up Python.
-      uses: actions/setup-python@v2
-      with:
-        python-version: "3.8"
+      - name: Set up Python.
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
 
-    - name: Install dependencies.
-      run: |
-        pip install -r requirements.txt
-        pip install -e .
+      - name: Install dependencies.
+        run: |
+          pip install -r requirements.txt
+          pip install -e .
 
-    - name: Update synthwave-fast
-      run: python scripts/simple/create_rotating_playlist.py synthwave-fast
+      - name: Update synthwave-fast
+        run: python scripts/simple/create_rotating_playlist.py synthwave-fast
 
-    - name: Update post-calm
-      run: python scripts/simple/create_rotating_playlist.py post-calm
+      - name: Update post-calm
+        run: python scripts/simple/create_rotating_playlist.py post-calm
 
-    - name: Update post
-      run: python scripts/simple/create_rotating_playlist.py post
+      - name: Update post
+        run: python scripts/simple/create_rotating_playlist.py post
 
-    - name: Update punk-ish
-      run: python scripts/simple/create_rotating_playlist.py punk-ish
+      - name: Update punk-ish
+        run: python scripts/simple/create_rotating_playlist.py punk-ish
 
-    - name: Update hip-hop
-      run: python scripts/simple/create_rotating_playlist.py hip-hop
+      - name: Update hip-hop
+        run: python scripts/simple/create_rotating_playlist.py hip-hop
 
-    - name: Update synthwave
-      run: python scripts/simple/create_rotating_playlist.py synthwave
+      - name: Update synthwave
+        run: python scripts/simple/create_rotating_playlist.py synthwave
