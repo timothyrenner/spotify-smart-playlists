@@ -1,7 +1,7 @@
 name: Simple Playlists
 
 on:
-  workflow-dispatch:
+  workflow_dispatch:
 
 jobs:
   simple_playlists:
