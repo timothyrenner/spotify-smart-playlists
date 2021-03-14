@@ -19,17 +19,17 @@ SPOTIFY_REDIRECT_URI = os.getenv("SPOTIFY_REDIRECT_URI")
 
 if not SPOTIFY_CLIENT_ID:
     msg = "Missing SPOTIFY_CLIENT_ID in env or .env."
-    logger.fatal(msg)
+    logger.error(msg)
     raise ValueError(msg)
 
 if not SPOTIFY_CLIENT_SECRET:
     msg = "Missing SPOTIFY_CLIENT_SECRET in env or .env."
-    logger.fatal(msg)
+    logger.error(msg)
     raise ValueError(msg)
 
 if not SPOTIFY_REDIRECT_URI:
     msg = "Missing SPOTIFY_REDIRECT_URI in env or .env."
-    logger.fatal(msg)
+    logger.error(msg)
     raise ValueError(msg)
 
 
@@ -143,9 +143,6 @@ def main(
         seed_playlist_track_ids - recent_track_ids
     )
 
-    # TODO: Add recommendations randomly, fill in gaps with recommended tracks.
-    # TODO: So if we only end up with 20 total tracks, add additional
-    # TODO: recommendations to even out the track count of the playlist.
     num_tracks = 25
     tracks_to_sample = min(
         len(seed_playlist_non_recent_track_ids), num_tracks - 5
