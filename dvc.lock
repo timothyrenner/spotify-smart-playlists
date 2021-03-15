@@ -1,0 +1,12 @@
+schema: '2.0'
+stages:
+  pull-recent-tracks:
+    cmd: python scripts/hands-free/log_recent_plays.py data/raw/play_history.csv
+    deps:
+    - path: scripts/hands-free/log_recent_plays.py
+      md5: 1ac6ffad20c3d728c973aab39988b550
+      size: 2050
+    outs:
+    - path: data/raw/play_history.csv
+      md5: f39de827c8653ef92b969f84534addf7
+      size: 2465
