@@ -11,5 +11,7 @@ setup(
         "ghapi",
         "pynacl",
         "toolz",
+        "dvc[gs]",
+        "pandas",
     ],
 )

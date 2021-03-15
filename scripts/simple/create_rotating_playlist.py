@@ -1,5 +1,4 @@
 import typer
-import os
 import spotipy
 
 from typing import Optional, Dict, Any, List
