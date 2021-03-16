@@ -1,6 +1,9 @@
 name: Hands Free Playlists
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 6 * * *"
 
 jobs:
   run_pipeline:
