@@ -14,3 +14,11 @@ stages:
     outs:
       - data/raw/library.csv
     always_changed: true
+  pull-audio-features:
+    cmd: python scripts/hands-free/pull_audio_features.py data/raw/library.csv data/raw/audio_features.csv
+    deps:
+      - scripts/hands-free/pull_audio_features.py
+      - data/raw/library.csv
+    outs:
+      - data/raw/audio_features.csv:
+          persist: true
