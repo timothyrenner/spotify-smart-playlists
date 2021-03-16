@@ -8,8 +8,8 @@ stages:
       size: 2031
     outs:
     - path: data/raw/play_history.csv
-      md5: e24fd82f41b07e4108e174918836c1ee
-      size: 3329
+      md5: 35b488ba7e9c0d8a49ea420c57a866fb
+      size: 4049
   pull-library:
     cmd: python scripts/hands-free/pull_library.py data/raw/library.csv
     deps:
@@ -33,3 +33,16 @@ stages:
     - path: data/raw/audio_features.csv
       md5: b995c16bb148fb555ba1a4b941fa8d29
       size: 91618
+  pull-artists:
+    cmd: python scripts/hands-free/pull_artists.py data/raw/library.csv data/raw/artists.csv
+    deps:
+    - path: data/raw/library.csv
+      md5: a421afb90f4c708e92c0d64088e0eafc
+      size: 87241
+    - path: scripts/hands-free/pull_audio_features.py
+      md5: 2c6dec23b5139b15a67ebb8a9547face
+      size: 2324
+    outs:
+    - path: data/raw/artists.csv
+      md5: b3740783573b69b17e6aa4c4f57a9648
+      size: 42431
