@@ -7,3 +7,10 @@ stages:
       - data/raw/play_history.csv:
           persist: true
     always_changed: true
+  pull-library:
+    cmd: python scripts/hands-free/pull_library.py data/raw/library.csv
+    deps:
+      - scripts/hands-free/pull_library.py
+    outs:
+      - data/raw/library.csv
+    always_changed: true
