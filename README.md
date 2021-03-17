@@ -48,24 +48,24 @@ Here's a complete schema.
 name: fast-angry
 # Select audio features.
 features:
-	valence:
-		min: 0.5
-		max: 0.8
-	energy:
-		min: 0.6
-	instrumentalness:
-		max: 0.5	
+    valence:
+        min: 0.5
+        max: 0.8
+    energy:
+        min: 0.6
+    instrumentalness:
+        max: 0.5	
 # Select artists to pick songs from.
 artists:
-	- "Rancid"
-	- "NoFX"
+    - "Rancid"
+    - "NoFX"
 # Select genres to pick songs from.
 genres:
-	- "punk"
+    - "punk"
 # Select tracks to add no matter what.
 additional_tracks:
-	- name: "Killing Zone"
-	  artist: "Rancid"
+    - name: "Killing Zone"
+      artist: "Rancid"
 ```
 
 genres, artists, and additional_tracks are all pretty self explanatory.
