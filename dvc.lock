@@ -8,8 +8,8 @@ stages:
       size: 2031
     outs:
     - path: data/raw/play_history.csv
-      md5: 662878df10a337350015bca3a22a7a31
-      size: 5825
+      md5: 4810a3797e176491aca3e88490f237aa
+      size: 6257
   pull-library:
     cmd: python scripts/hands-free/pull_library.py data/raw/library.csv
     deps:
@@ -18,47 +18,47 @@ stages:
       size: 1521
     outs:
     - path: data/raw/library.csv
-      md5: 920ecd24ef44876592cea5d4004cd953
-      size: 87409
+      md5: ea8ab2a4d288073f04bc72fd2a843479
+      size: 87484
   pull-audio-features:
     cmd: python scripts/hands-free/pull_audio_features.py data/raw/library.csv data/raw/audio_features.csv
     deps:
     - path: data/raw/library.csv
-      md5: 920ecd24ef44876592cea5d4004cd953
-      size: 87409
+      md5: ea8ab2a4d288073f04bc72fd2a843479
+      size: 87484
     - path: scripts/hands-free/pull_audio_features.py
       md5: 2c6dec23b5139b15a67ebb8a9547face
       size: 2324
     outs:
     - path: data/raw/audio_features.csv
-      md5: 42c7bc217f86d9ad9fa1d6e6f3a6b147
-      size: 91811
+      md5: 21399494ae636911fefb0401ef93ff90
+      size: 91904
   pull-artists:
     cmd: python scripts/hands-free/pull_artists.py data/raw/library.csv data/raw/artists.csv
     deps:
     - path: data/raw/library.csv
-      md5: 920ecd24ef44876592cea5d4004cd953
-      size: 87409
+      md5: ea8ab2a4d288073f04bc72fd2a843479
+      size: 87484
     - path: scripts/hands-free/pull_audio_features.py
       md5: 2c6dec23b5139b15a67ebb8a9547face
       size: 2324
     outs:
     - path: data/raw/artists.csv
-      md5: dd6e3b080daccd7c2901db54803bb31f
-      size: 42548
+      md5: 2608b6b3fe2ebe4b25f511641338ef02
+      size: 42596
   build-root-playlists@angry_instrumentals:
     cmd: python scripts/hands-free/make_root_playlist.py "playlists/angry_instrumentals.yaml"
       data/raw/library.csv data/raw/audio_features.csv data/raw/artists.csv "data/processed/angry_instrumentals.csv"
     deps:
     - path: data/raw/artists.csv
-      md5: dd6e3b080daccd7c2901db54803bb31f
-      size: 42548
+      md5: 2608b6b3fe2ebe4b25f511641338ef02
+      size: 42596
     - path: data/raw/audio_features.csv
-      md5: 42c7bc217f86d9ad9fa1d6e6f3a6b147
-      size: 91811
+      md5: 21399494ae636911fefb0401ef93ff90
+      size: 91904
     - path: data/raw/library.csv
-      md5: 920ecd24ef44876592cea5d4004cd953
-      size: 87409
+      md5: ea8ab2a4d288073f04bc72fd2a843479
+      size: 87484
     - path: playlists/angry_instrumentals.yaml
       md5: 78bcdd2abefc186b212339f18457000d
       size: 146
