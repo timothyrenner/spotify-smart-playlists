@@ -1,0 +1,9 @@
+name: calm-instrumentals
+
+audio_features:
+  valence:
+    min: 0.75
+  instrumentalness:
+    min: 0.8
+  energy:
+    max: 0.25

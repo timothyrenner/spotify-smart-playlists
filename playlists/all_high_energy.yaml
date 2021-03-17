@@ -1,0 +1,7 @@
+name: all-high-energy
+
+audio_features:
+  energy:
+    min: 0.75
+  tempo:
+    min: 120
