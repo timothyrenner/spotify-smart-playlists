@@ -30,3 +30,16 @@ stages:
     outs:
       - data/raw/artists.csv:
           persist: true
+  build-root-playlists:
+    foreach:
+      - angry_instrumentals
+    do:
+      cmd: python scripts/hands-free/make_root_playlist.py "playlists/${item}.yaml" data/raw/library.csv data/raw/audio_features.csv data/raw/artists.csv "data/processed/${item}.csv"
+      deps:
+        - scripts/hands-free/make_root_playlist.py
+        - "playlists/${item}.yaml"
+        - data/raw/library.csv
+        - data/raw/audio_features.csv
+        - data/raw/artists.csv
+      outs:
+        - "data/processed/${item}.csv"

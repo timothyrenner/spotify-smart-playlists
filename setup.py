@@ -13,5 +13,6 @@ setup(
         "toolz",
         "dvc[gs]",
         "pandas",
+        "omegaconf",
     ],
 )
