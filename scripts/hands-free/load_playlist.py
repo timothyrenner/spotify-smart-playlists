@@ -72,6 +72,9 @@ def main(
     logger.info(f"Loading root playlist from {root_playlist_file}.")
     root_playlist = pd.read_csv(root_playlist_file)
 
+    if root_playlist.empty:
+        raise ValueError(f"No tracks in {root_playlist_file}.")
+
     one_week_ago = datetime.now(tz.tzutc()) - relativedelta(weeks=1)
     logger.info(f"Removing tracks played after {one_week_ago}.")
     root_playlist = root_playlist.merge(
