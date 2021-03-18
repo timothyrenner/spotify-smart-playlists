@@ -77,6 +77,12 @@ It removes any tracks played in the last week and salts the playlists with recom
 Just like the tracks you like and they'll make their way into these playlists, hands free.
 Hence the name 😄.
 
+### Note
+DVC will throw an error if it sees a new playlist config file but doesn't have the corresponding root playlist files.
+This happens when adding a new playlist config file without repro-ing the pipeline locally.
+
+*** Repro the pipeline locally when adding a config based playlist. ***
+
 ## Machine learned auto rotating playlists
 
 This is my phase 3.
