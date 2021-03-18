@@ -155,15 +155,15 @@ stages:
       md5: ea8ab2a4d288073f04bc72fd2a843479
       size: 87484
     - path: playlists/calm_instrumentals.yaml
-      md5: 3dac3242a84fbf1d7910fee9a496ebbc
-      size: 148
+      md5: 1640503bc941e9d5c53fdfbc05b9c807
+      size: 223
     - path: scripts/hands-free/make_root_playlist.py
       md5: 034548bf992b46702558722b62bad6f9
       size: 6967
     outs:
     - path: data/processed/calm_instrumentals.csv
-      md5: f14c3b1d5f7a7f80c432bfaeb1c42cf7
-      size: 14885
+      md5: 97b189602343810f7ff67aaeb2d8d9b8
+      size: 16358
   load-hands-free-root-playlists@calm_instrumentals:
     cmd: python scripts/hands-free/load_playlist.py data/processed/calm_instrumentals.csv
       data/raw/play_history.csv

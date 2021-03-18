@@ -7,5 +7,9 @@ audio_features:
     max: 0.5
   loudness:
     max: -10.0
-  tempo:
-    max: 120
+
+genres:
+  - post-rock
+  - compositional ambient
+  - ambient
+  - drone
