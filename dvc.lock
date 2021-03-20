@@ -177,3 +177,73 @@ stages:
     - path: scripts/hands-free/load_playlist.py
       md5: 5c686347e49a1014133a0a8a1d81ba2e
       size: 4239
+  build-hands-free-root-playlists@hip_hop:
+    cmd: python scripts/hands-free/make_root_playlist.py "playlists/hip_hop.yaml"
+      data/raw/library.csv data/raw/audio_features.csv data/raw/artists.csv "data/processed/hip_hop.csv"
+    deps:
+    - path: data/raw/artists.csv
+      md5: fb30bdfd84e3f64324840792f7396f78
+      size: 42962
+    - path: data/raw/audio_features.csv
+      md5: a74c3be2bbdda772d51cd23ca1977d20
+      size: 92289
+    - path: data/raw/library.csv
+      md5: 715f1ff3e70b370eb56fdc1ac841df21
+      size: 87862
+    - path: playlists/hip_hop.yaml
+      md5: 82493c9d1983b6083391f6ddac232d15
+      size: 43
+    - path: scripts/hands-free/make_root_playlist.py
+      md5: 034548bf992b46702558722b62bad6f9
+      size: 6967
+    outs:
+    - path: data/processed/hip_hop.csv
+      md5: 1ec7cc859b15481f44112a1cd0a5ac8c
+      size: 68079
+  build-hands-free-root-playlists@wu_tang:
+    cmd: python scripts/hands-free/make_root_playlist.py "playlists/wu_tang.yaml"
+      data/raw/library.csv data/raw/audio_features.csv data/raw/artists.csv "data/processed/wu_tang.csv"
+    deps:
+    - path: data/raw/artists.csv
+      md5: fb30bdfd84e3f64324840792f7396f78
+      size: 42962
+    - path: data/raw/audio_features.csv
+      md5: a74c3be2bbdda772d51cd23ca1977d20
+      size: 92289
+    - path: data/raw/library.csv
+      md5: 715f1ff3e70b370eb56fdc1ac841df21
+      size: 87862
+    - path: playlists/wu_tang.yaml
+      md5: 794546a08598b9cc2e78599226b2a78e
+      size: 138
+    - path: scripts/hands-free/make_root_playlist.py
+      md5: 034548bf992b46702558722b62bad6f9
+      size: 6967
+    outs:
+    - path: data/processed/wu_tang.csv
+      md5: 1e749c329617468ac4d07012c0572398
+      size: 17759
+  load-hands-free-root-playlists@hip_hop:
+    cmd: python scripts/hands-free/load_playlist.py data/processed/hip_hop.csv data/raw/play_history.csv
+    deps:
+    - path: data/processed/hip_hop.csv
+      md5: 1ec7cc859b15481f44112a1cd0a5ac8c
+      size: 68079
+    - path: data/raw/play_history.csv
+      md5: c4c8545c23213b4b6f4e98e59a981d29
+      size: 10673
+    - path: scripts/hands-free/load_playlist.py
+      md5: 5c686347e49a1014133a0a8a1d81ba2e
+      size: 4239
+  load-hands-free-root-playlists@wu_tang:
+    cmd: python scripts/hands-free/load_playlist.py data/processed/wu_tang.csv data/raw/play_history.csv
+    deps:
+    - path: data/processed/wu_tang.csv
+      md5: 1e749c329617468ac4d07012c0572398
+      size: 17759
+    - path: data/raw/play_history.csv
+      md5: c4c8545c23213b4b6f4e98e59a981d29
+      size: 10673
+    - path: scripts/hands-free/load_playlist.py
+      md5: 5c686347e49a1014133a0a8a1d81ba2e
+      size: 4239
