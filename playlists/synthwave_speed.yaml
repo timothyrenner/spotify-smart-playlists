@@ -1,0 +1,17 @@
+name: synthwave_speed
+
+audio_features:
+  tempo:
+    min: 100
+
+genres:
+  - synthwave
+  - darksynth
+  - cyberpunk
+  - spacewave
+  - nightrun
+  - filter house
+
+additional_tracks:
+  - name: Feel the Steel
+    artist: Muscle
