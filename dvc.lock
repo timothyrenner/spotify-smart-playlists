@@ -8,8 +8,8 @@ stages:
       size: 2031
     outs:
     - path: data/raw/play_history.csv
-      md5: c4c8545c23213b4b6f4e98e59a981d29
-      size: 10673
+      md5: 2d982f5cb15165fb0c257aab53e9aa3a
+      size: 12017
   pull-library:
     cmd: python scripts/hands-free/pull_library.py data/raw/library.csv
     deps:
@@ -100,8 +100,8 @@ stages:
       md5: c08c5d3b927a82a3ee35ae618f984fe2
       size: 10286
     - path: data/raw/play_history.csv
-      md5: c4c8545c23213b4b6f4e98e59a981d29
-      size: 10673
+      md5: 2d982f5cb15165fb0c257aab53e9aa3a
+      size: 12017
     - path: scripts/hands-free/load_playlist.py
       md5: 5c686347e49a1014133a0a8a1d81ba2e
       size: 4239
@@ -136,8 +136,8 @@ stages:
       md5: 6f48fdbe5451acf86821011ef03de927
       size: 66444
     - path: data/raw/play_history.csv
-      md5: c4c8545c23213b4b6f4e98e59a981d29
-      size: 10673
+      md5: 2d982f5cb15165fb0c257aab53e9aa3a
+      size: 12017
     - path: scripts/hands-free/load_playlist.py
       md5: 5c686347e49a1014133a0a8a1d81ba2e
       size: 4239
@@ -172,8 +172,8 @@ stages:
       md5: 97b189602343810f7ff67aaeb2d8d9b8
       size: 16358
     - path: data/raw/play_history.csv
-      md5: c4c8545c23213b4b6f4e98e59a981d29
-      size: 10673
+      md5: 2d982f5cb15165fb0c257aab53e9aa3a
+      size: 12017
     - path: scripts/hands-free/load_playlist.py
       md5: 5c686347e49a1014133a0a8a1d81ba2e
       size: 4239
@@ -230,8 +230,8 @@ stages:
       md5: 1ec7cc859b15481f44112a1cd0a5ac8c
       size: 68079
     - path: data/raw/play_history.csv
-      md5: c4c8545c23213b4b6f4e98e59a981d29
-      size: 10673
+      md5: 2d982f5cb15165fb0c257aab53e9aa3a
+      size: 12017
     - path: scripts/hands-free/load_playlist.py
       md5: 5c686347e49a1014133a0a8a1d81ba2e
       size: 4239
@@ -242,8 +242,8 @@ stages:
       md5: 1e749c329617468ac4d07012c0572398
       size: 17759
     - path: data/raw/play_history.csv
-      md5: c4c8545c23213b4b6f4e98e59a981d29
-      size: 10673
+      md5: 2d982f5cb15165fb0c257aab53e9aa3a
+      size: 12017
     - path: scripts/hands-free/load_playlist.py
       md5: 5c686347e49a1014133a0a8a1d81ba2e
       size: 4239
