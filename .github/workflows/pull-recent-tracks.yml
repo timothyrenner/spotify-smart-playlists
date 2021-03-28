@@ -2,6 +2,8 @@ name: Pull Recent Tracks
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "30 18 * * *"
 
 jobs:
   pull_recent_tracks:
