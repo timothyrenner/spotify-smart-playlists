@@ -7,61 +7,61 @@ jobs:
   pull_recent_tracks:
     runs-on: ubuntu-latest
 
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      with:
-        persist-credentials: false
-        fetch-depth: 0
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
 
-    - name: Set up environment
-      run: |
-        echo '${{ secrets.SPOTIPY_CREDENTIALS }}' > .cache
-        echo GH_SPOTIFY_ACCESS_TOKEN=${{ secrets.GH_SPOTIFY_ACCESS_TOKEN }} >> $GITHUB_ENV
-        echo SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }} >> $GITHUB_ENV
-        echo SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }} >> $GITHUB_ENV
-        echo SPOTIFY_REDIRECT_URI=${{ secrets.SPOTIFY_REDIRECT_URI }} >> $GITHUB_ENV
+      - name: Set up environment
+        run: |
+          echo '${{ secrets.SPOTIPY_CREDENTIALS }}' > .cache
+          echo GH_SPOTIFY_ACCESS_TOKEN=${{ secrets.GH_SPOTIFY_ACCESS_TOKEN }} >> $GITHUB_ENV
+          echo SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }} >> $GITHUB_ENV
+          echo SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }} >> $GITHUB_ENV
+          echo SPOTIFY_REDIRECT_URI=${{ secrets.SPOTIFY_REDIRECT_URI }} >> $GITHUB_ENV
 
-    - name: Set up python
-      uses: actions/setup-python@v2
-      with:
-        python-version: "3.8"
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
 
-    - name: Set up Google Cloud SDK
-      uses: google-github-actions/setup-gcloud@master
-      with:
-        project_id: ${{ secrets.PERSONAL_PROJECT_ID }}
-        service_account_key: ${{ secrets.MUSIC_DVC_PUSHER_SA_CREDS }}
-        export_default_credentials: true
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.PERSONAL_PROJECT_ID }}
+          service_account_key: ${{ secrets.MUSIC_DVC_PUSHER_SA_CREDS }}
+          export_default_credentials: true
 
-    - name: Set up git
-      run: |
-        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
+      - name: Set up git
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
 
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        pip install -e .
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -e .
 
-    - name: Pull DVC
-      run: dvc pull pull-recent-tracks
+      - name: Pull DVC
+        run: dvc pull pull-recent-tracks
 
-    - name: Run DVC repro
-      run: dvc repro pull-recent-tracks
+      - name: Run DVC repro
+        run: dvc repro pull-recent-tracks
 
-    - name: git add
-      continue-on-error: true
-      run: |
-        git add dvc.lock
-        timestamp=$(date -u)
-        git commit -m "Update recently played: ${timestamp}."
+      - name: git add
+        continue-on-error: true
+        run: |
+          git add dvc.lock
+          timestamp=$(date -u)
+          git commit -m "Update recently played: ${timestamp}."
 
-    - name: git push
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GH_SPOTIFY_ACCESS_TOKEN }}
-        branch: ${{ github.ref }}
+      - name: git push
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GH_SPOTIFY_ACCESS_TOKEN }}
+          branch: ${{ github.ref }}
 
-    - name: DVC push
-      run: dvc push pull-recent-tracks
+      - name: DVC push
+        run: dvc push pull-recent-tracks
