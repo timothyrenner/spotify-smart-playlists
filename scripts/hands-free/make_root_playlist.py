@@ -71,6 +71,7 @@ def create_playlist_frame(
             ["track_id", "name", "artist_ids"]
         ]
         .drop_duplicates()
+        .assign(rotate=True)  # Rotate tracks by default.
         .reset_index()
     )
 
@@ -108,6 +109,7 @@ def get_additional_tracks(
                     ["track_id", "name", "artist_ids"]
                 ]
                 .drop_duplicates()
+                .assign(rotate=additional_track["rotate"])
             )
         additional_track_frames.append(library_track)
 

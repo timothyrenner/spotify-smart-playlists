@@ -11,3 +11,4 @@ genres:
 additional_tracks:
   - name: Feel the Steel
     artist: Muscle
+    rotate: false

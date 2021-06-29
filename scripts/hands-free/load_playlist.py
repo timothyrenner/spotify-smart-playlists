@@ -79,7 +79,7 @@ def main(
     logger.info(f"Removing tracks played after {one_week_ago}.")
     root_playlist = root_playlist.merge(
         tracks_latest_played, on="track_id", how="left"
-    ).query("last_played.isnull() | (last_played<@one_week_ago)")
+    ).query("last_played.isnull() | (last_played<@one_week_ago) | ~rotate")
 
     logger.info("Initializing Spotify client.")
     spotify = spotipy.Spotify(client_credentials_manager=spotify_auth())
