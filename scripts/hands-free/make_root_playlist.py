@@ -4,6 +4,7 @@ import pandas as pd
 from omegaconf import OmegaConf
 from loguru import logger
 from typing import Dict, Any, List
+from toolz import get
 
 
 def split_pipe_delimited_string(pipe_delimited_string: str) -> List[str]:
@@ -109,7 +110,7 @@ def get_additional_tracks(
                     ["track_id", "name", "artist_ids"]
                 ]
                 .drop_duplicates()
-                .assign(rotate=additional_track["rotate"])
+                .assign(rotate=get("rotate", additional_track, False))
             )
         additional_track_frames.append(library_track)
 
