@@ -8,8 +8,8 @@ stages:
       size: 2031
     outs:
     - path: data/raw/play_history.csv
-      md5: b146a34662ea9dc6ae31d08af7afc653
-      size: 176941
+      md5: ca0267a22a00b15852e29526eb90e9df
+      size: 178381
   pull-library:
     cmd: python scripts/hands-free/pull_library.py data/raw/library.csv
     deps:
