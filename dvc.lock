@@ -8,8 +8,8 @@ stages:
       size: 2031
     outs:
     - path: data/raw/play_history.csv
-      md5: 906277d90bdbf1dac03b3f3135d170f4
-      size: 259733
+      md5: 8f4ef273a9609c86368e62f5e1ddef79
+      size: 260021
   pull-library:
     cmd: python scripts/hands-free/pull_library.py data/raw/library.csv
     deps:
@@ -100,8 +100,8 @@ stages:
       md5: b47465596f38483a84061a98978e34d3
       size: 27050
     - path: data/raw/play_history.csv
-      md5: af2383ec830550c3c68aa405e12f9469
-      size: 259637
+      md5: 8f4ef273a9609c86368e62f5e1ddef79
+      size: 260021
     - path: scripts/hands-free/load_playlist.py
       md5: 5020e94978a07bac0723e2c28c4c498d
       size: 4249
@@ -136,8 +136,8 @@ stages:
       md5: a311291110e96dbd3a0dfe50d8e2f2db
       size: 90316
     - path: data/raw/play_history.csv
-      md5: af2383ec830550c3c68aa405e12f9469
-      size: 259637
+      md5: 8f4ef273a9609c86368e62f5e1ddef79
+      size: 260021
     - path: scripts/hands-free/load_playlist.py
       md5: 5020e94978a07bac0723e2c28c4c498d
       size: 4249
@@ -172,8 +172,8 @@ stages:
       md5: 390f0d03c1c2688e6317ef1d06d3f343
       size: 17231
     - path: data/raw/play_history.csv
-      md5: af2383ec830550c3c68aa405e12f9469
-      size: 259637
+      md5: 8f4ef273a9609c86368e62f5e1ddef79
+      size: 260021
     - path: scripts/hands-free/load_playlist.py
       md5: 5020e94978a07bac0723e2c28c4c498d
       size: 4249
@@ -230,8 +230,8 @@ stages:
       md5: 0d9a3772fdaaff8169ebff622da805c0
       size: 86282
     - path: data/raw/play_history.csv
-      md5: af2383ec830550c3c68aa405e12f9469
-      size: 259637
+      md5: 8f4ef273a9609c86368e62f5e1ddef79
+      size: 260021
     - path: scripts/hands-free/load_playlist.py
       md5: 5020e94978a07bac0723e2c28c4c498d
       size: 4249
@@ -242,8 +242,8 @@ stages:
       md5: 534962d6f261c9fbac37ce34bcd022fa
       size: 28039
     - path: data/raw/play_history.csv
-      md5: af2383ec830550c3c68aa405e12f9469
-      size: 259637
+      md5: 8f4ef273a9609c86368e62f5e1ddef79
+      size: 260021
     - path: scripts/hands-free/load_playlist.py
       md5: 5020e94978a07bac0723e2c28c4c498d
       size: 4249
@@ -301,8 +301,8 @@ stages:
       md5: cf392dad9d81e0b1e7b7842d08c46794
       size: 51480
     - path: data/raw/play_history.csv
-      md5: af2383ec830550c3c68aa405e12f9469
-      size: 259637
+      md5: 8f4ef273a9609c86368e62f5e1ddef79
+      size: 260021
     - path: scripts/hands-free/load_playlist.py
       md5: 5020e94978a07bac0723e2c28c4c498d
       size: 4249
@@ -314,8 +314,8 @@ stages:
       md5: 3fa19679bdcd4c94e7865ad063772e82
       size: 58713
     - path: data/raw/play_history.csv
-      md5: af2383ec830550c3c68aa405e12f9469
-      size: 259637
+      md5: 8f4ef273a9609c86368e62f5e1ddef79
+      size: 260021
     - path: scripts/hands-free/load_playlist.py
       md5: 5020e94978a07bac0723e2c28c4c498d
       size: 4249
