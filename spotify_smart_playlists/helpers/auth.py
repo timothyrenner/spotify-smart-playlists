@@ -34,6 +34,7 @@ def spotify_auth() -> SpotifyOAuth:
             "playlist-read-private",
             "user-read-recently-played",
             "playlist-modify-public",
+            "playlist-modify-private",
             "user-library-read",
         ]
     )
