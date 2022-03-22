@@ -8,6 +8,8 @@ on:
 jobs:
   run_pipeline:
     runs-on: ubuntu-latest
+    env:
+      GCP_PROJECT_ID: ${{ secrets.PERSONAL_PROJECT_ID }}
 
     steps:
       - name: Checkout code
@@ -29,12 +31,13 @@ jobs:
         with:
           python-version: "3.8"
 
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@master
+      - name: Authorize Gcloud
+        uses: actions/auth@v0
         with:
-          project_id: ${{ secrets.PERSONAL_PROJECT_ID }}
-          service_account_key: ${{ secrets.MUSIC_DVC_PUSHER_SA_CREDS }}
-          export_default_credentials: true
+          credentials_json: "${{ secrets.MUSIC_DVC_PUSHER_SA_CREDS }}"
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup_gcloud@v0
 
       - name: Set up git
         run: |
