@@ -8,8 +8,8 @@ stages:
       size: 2031
     outs:
     - path: data/raw/play_history.csv
-      md5: b3eaa8c35af1197f54b49cf45072d793
-      size: 551361
+      md5: 68b52a10de3f859c0856c91db862f249
+      size: 552177
   pull-library:
     cmd: python scripts/hands-free/pull_library.py data/raw/library.csv
     deps:
@@ -18,34 +18,34 @@ stages:
       size: 1521
     outs:
     - path: data/raw/library.csv
-      md5: 5ebd8a7d089aebf95dd174207ff17a2e
-      size: 178886
+      md5: ef7dc900de6a6d6aa0820bc4fc5a4328
+      size: 179151
   pull-audio-features:
     cmd: python scripts/hands-free/pull_audio_features.py data/raw/library.csv data/raw/audio_features.csv
     deps:
     - path: data/raw/library.csv
-      md5: 5ebd8a7d089aebf95dd174207ff17a2e
-      size: 178886
+      md5: ef7dc900de6a6d6aa0820bc4fc5a4328
+      size: 179151
     - path: scripts/hands-free/pull_audio_features.py
       md5: 2c6dec23b5139b15a67ebb8a9547face
       size: 2324
     outs:
     - path: data/raw/audio_features.csv
-      md5: fc45e8846057cca15d07f32c3c815495
-      size: 185140
+      md5: f5311347fc17f4cae6f3bc56ae3b2bdb
+      size: 185410
   pull-artists:
     cmd: python scripts/hands-free/pull_artists.py data/raw/library.csv data/raw/artists.csv
     deps:
     - path: data/raw/library.csv
-      md5: 5ebd8a7d089aebf95dd174207ff17a2e
-      size: 178886
+      md5: ef7dc900de6a6d6aa0820bc4fc5a4328
+      size: 179151
     - path: scripts/hands-free/pull_audio_features.py
       md5: 2c6dec23b5139b15a67ebb8a9547face
       size: 2324
     outs:
     - path: data/raw/artists.csv
-      md5: c4ac5168011641abe96a1b70b0063ec1
-      size: 66360
+      md5: b72b0c06b14248f0f9a6b757307e4efb
+      size: 66588
   build-root-playlists@angry_instrumentals:
     cmd: python scripts/hands-free/make_root_playlist.py "playlists/angry_instrumentals.yaml"
       data/raw/library.csv data/raw/audio_features.csv data/raw/artists.csv "data/processed/angry_instrumentals.csv"
@@ -74,14 +74,14 @@ stages:
       data/raw/library.csv data/raw/audio_features.csv data/raw/artists.csv "data/processed/angry_instrumentals.csv"
     deps:
     - path: data/raw/artists.csv
-      md5: c4ac5168011641abe96a1b70b0063ec1
-      size: 66360
+      md5: b72b0c06b14248f0f9a6b757307e4efb
+      size: 66588
     - path: data/raw/audio_features.csv
-      md5: fc45e8846057cca15d07f32c3c815495
-      size: 185140
+      md5: f5311347fc17f4cae6f3bc56ae3b2bdb
+      size: 185410
     - path: data/raw/library.csv
-      md5: 5ebd8a7d089aebf95dd174207ff17a2e
-      size: 178886
+      md5: ef7dc900de6a6d6aa0820bc4fc5a4328
+      size: 179151
     - path: playlists/angry_instrumentals.yaml
       md5: 78bcdd2abefc186b212339f18457000d
       size: 146
@@ -100,8 +100,8 @@ stages:
       md5: efd4e240c37d97d068e09bf6a461aabb
       size: 42026
     - path: data/raw/play_history.csv
-      md5: 8f05adbb24359254c16cf88b6b28a970
-      size: 550017
+      md5: 68b52a10de3f859c0856c91db862f249
+      size: 552177
     - path: scripts/hands-free/load_playlist.py
       md5: 5020e94978a07bac0723e2c28c4c498d
       size: 4249
@@ -110,14 +110,14 @@ stages:
       data/raw/library.csv data/raw/audio_features.csv data/raw/artists.csv "data/processed/all_high_energy.csv"
     deps:
     - path: data/raw/artists.csv
-      md5: c4ac5168011641abe96a1b70b0063ec1
-      size: 66360
+      md5: b72b0c06b14248f0f9a6b757307e4efb
+      size: 66588
     - path: data/raw/audio_features.csv
-      md5: fc45e8846057cca15d07f32c3c815495
-      size: 185140
+      md5: f5311347fc17f4cae6f3bc56ae3b2bdb
+      size: 185410
     - path: data/raw/library.csv
-      md5: 5ebd8a7d089aebf95dd174207ff17a2e
-      size: 178886
+      md5: ef7dc900de6a6d6aa0820bc4fc5a4328
+      size: 179151
     - path: playlists/all_high_energy.yaml
       md5: d9bfc6eac3c771a8f48265339b56c334
       size: 85
@@ -136,8 +136,8 @@ stages:
       md5: d5211d9a6a8f86ae90a96a44d3e93c95
       size: 125954
     - path: data/raw/play_history.csv
-      md5: 8f05adbb24359254c16cf88b6b28a970
-      size: 550017
+      md5: 68b52a10de3f859c0856c91db862f249
+      size: 552177
     - path: scripts/hands-free/load_playlist.py
       md5: 5020e94978a07bac0723e2c28c4c498d
       size: 4249
@@ -146,14 +146,14 @@ stages:
       data/raw/library.csv data/raw/audio_features.csv data/raw/artists.csv "data/processed/calm_instrumentals.csv"
     deps:
     - path: data/raw/artists.csv
-      md5: c4ac5168011641abe96a1b70b0063ec1
-      size: 66360
+      md5: b72b0c06b14248f0f9a6b757307e4efb
+      size: 66588
     - path: data/raw/audio_features.csv
-      md5: fc45e8846057cca15d07f32c3c815495
-      size: 185140
+      md5: f5311347fc17f4cae6f3bc56ae3b2bdb
+      size: 185410
     - path: data/raw/library.csv
-      md5: 5ebd8a7d089aebf95dd174207ff17a2e
-      size: 178886
+      md5: ef7dc900de6a6d6aa0820bc4fc5a4328
+      size: 179151
     - path: playlists/calm_instrumentals.yaml
       md5: 973a32ab188f4020bb8a458d8f22f2bf
       size: 197
@@ -172,8 +172,8 @@ stages:
       md5: cd5fd14e3a4f541fa80f0036981349b7
       size: 17598
     - path: data/raw/play_history.csv
-      md5: 8f05adbb24359254c16cf88b6b28a970
-      size: 550017
+      md5: 68b52a10de3f859c0856c91db862f249
+      size: 552177
     - path: scripts/hands-free/load_playlist.py
       md5: 5020e94978a07bac0723e2c28c4c498d
       size: 4249
@@ -182,14 +182,14 @@ stages:
       data/raw/library.csv data/raw/audio_features.csv data/raw/artists.csv "data/processed/hip_hop.csv"
     deps:
     - path: data/raw/artists.csv
-      md5: c4ac5168011641abe96a1b70b0063ec1
-      size: 66360
+      md5: b72b0c06b14248f0f9a6b757307e4efb
+      size: 66588
     - path: data/raw/audio_features.csv
-      md5: fc45e8846057cca15d07f32c3c815495
-      size: 185140
+      md5: f5311347fc17f4cae6f3bc56ae3b2bdb
+      size: 185410
     - path: data/raw/library.csv
-      md5: 5ebd8a7d089aebf95dd174207ff17a2e
-      size: 178886
+      md5: ef7dc900de6a6d6aa0820bc4fc5a4328
+      size: 179151
     - path: playlists/hip_hop.yaml
       md5: 82493c9d1983b6083391f6ddac232d15
       size: 43
@@ -198,21 +198,21 @@ stages:
       size: 7118
     outs:
     - path: data/processed/hip_hop.csv
-      md5: 2a5a761c9a4308a3dbefbbaffe93348a
-      size: 113875
+      md5: 344a36855fbed39d66f4af15e61fe4b6
+      size: 114613
   build-hands-free-root-playlists@wu_tang:
     cmd: python scripts/hands-free/make_root_playlist.py "playlists/wu_tang.yaml"
       data/raw/library.csv data/raw/audio_features.csv data/raw/artists.csv "data/processed/wu_tang.csv"
     deps:
     - path: data/raw/artists.csv
-      md5: c4ac5168011641abe96a1b70b0063ec1
-      size: 66360
+      md5: b72b0c06b14248f0f9a6b757307e4efb
+      size: 66588
     - path: data/raw/audio_features.csv
-      md5: fc45e8846057cca15d07f32c3c815495
-      size: 185140
+      md5: f5311347fc17f4cae6f3bc56ae3b2bdb
+      size: 185410
     - path: data/raw/library.csv
-      md5: 5ebd8a7d089aebf95dd174207ff17a2e
-      size: 178886
+      md5: ef7dc900de6a6d6aa0820bc4fc5a4328
+      size: 179151
     - path: playlists/wu_tang.yaml
       md5: 794546a08598b9cc2e78599226b2a78e
       size: 138
@@ -227,11 +227,11 @@ stages:
     cmd: python scripts/hands-free/load_playlist.py data/processed/hip_hop.csv data/raw/play_history.csv
     deps:
     - path: data/processed/hip_hop.csv
-      md5: 2a5a761c9a4308a3dbefbbaffe93348a
-      size: 113875
+      md5: 344a36855fbed39d66f4af15e61fe4b6
+      size: 114613
     - path: data/raw/play_history.csv
-      md5: 8f05adbb24359254c16cf88b6b28a970
-      size: 550017
+      md5: 68b52a10de3f859c0856c91db862f249
+      size: 552177
     - path: scripts/hands-free/load_playlist.py
       md5: 5020e94978a07bac0723e2c28c4c498d
       size: 4249
@@ -242,8 +242,8 @@ stages:
       md5: 7ac0ddc0efc3046350c8d7c6a1f9ba61
       size: 37831
     - path: data/raw/play_history.csv
-      md5: 8f05adbb24359254c16cf88b6b28a970
-      size: 550017
+      md5: 68b52a10de3f859c0856c91db862f249
+      size: 552177
     - path: scripts/hands-free/load_playlist.py
       md5: 5020e94978a07bac0723e2c28c4c498d
       size: 4249
@@ -252,14 +252,14 @@ stages:
       data/raw/library.csv data/raw/audio_features.csv data/raw/artists.csv "data/processed/all_synthwave.csv"
     deps:
     - path: data/raw/artists.csv
-      md5: c4ac5168011641abe96a1b70b0063ec1
-      size: 66360
+      md5: b72b0c06b14248f0f9a6b757307e4efb
+      size: 66588
     - path: data/raw/audio_features.csv
-      md5: fc45e8846057cca15d07f32c3c815495
-      size: 185140
+      md5: f5311347fc17f4cae6f3bc56ae3b2bdb
+      size: 185410
     - path: data/raw/library.csv
-      md5: 5ebd8a7d089aebf95dd174207ff17a2e
-      size: 178886
+      md5: ef7dc900de6a6d6aa0820bc4fc5a4328
+      size: 179151
     - path: playlists/all_synthwave.yaml
       md5: ebab89122750bf7dfc3a4cd7cf115dc4
       size: 723
@@ -275,14 +275,14 @@ stages:
       data/raw/library.csv data/raw/audio_features.csv data/raw/artists.csv "data/processed/synthwave_speed.csv"
     deps:
     - path: data/raw/artists.csv
-      md5: c4ac5168011641abe96a1b70b0063ec1
-      size: 66360
+      md5: b72b0c06b14248f0f9a6b757307e4efb
+      size: 66588
     - path: data/raw/audio_features.csv
-      md5: fc45e8846057cca15d07f32c3c815495
-      size: 185140
+      md5: f5311347fc17f4cae6f3bc56ae3b2bdb
+      size: 185410
     - path: data/raw/library.csv
-      md5: 5ebd8a7d089aebf95dd174207ff17a2e
-      size: 178886
+      md5: ef7dc900de6a6d6aa0820bc4fc5a4328
+      size: 179151
     - path: playlists/synthwave_speed.yaml
       md5: 8620eecf329a84257b37d939bf0463fc
       size: 764
@@ -301,8 +301,8 @@ stages:
       md5: ddf1e29176bf156ce709f1cef7acb1ca
       size: 97196
     - path: data/raw/play_history.csv
-      md5: 8f05adbb24359254c16cf88b6b28a970
-      size: 550017
+      md5: 68b52a10de3f859c0856c91db862f249
+      size: 552177
     - path: scripts/hands-free/load_playlist.py
       md5: 5020e94978a07bac0723e2c28c4c498d
       size: 4249
@@ -314,8 +314,8 @@ stages:
       md5: 100dfeb0475f74407520bf2b385980de
       size: 113197
     - path: data/raw/play_history.csv
-      md5: 8f05adbb24359254c16cf88b6b28a970
-      size: 550017
+      md5: 68b52a10de3f859c0856c91db862f249
+      size: 552177
     - path: scripts/hands-free/load_playlist.py
       md5: 5020e94978a07bac0723e2c28c4c498d
       size: 4249
