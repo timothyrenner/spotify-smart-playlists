@@ -30,7 +30,7 @@ def main(database: str):
         if rt["played_at"] > max_date
     ]
     recent_tracks_frame = pd.DataFrame(recent_tracks)
-    recent_tracks_frame.loc[:, "played_at"] = pd.to_datetime(
+    recent_tracks_frame["played_at"] = pd.to_datetime(
         recent_tracks_frame.played_at
     )
     logger.info(
