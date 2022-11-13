@@ -5,16 +5,8 @@ import pandas as pd
 
 from loguru import logger
 from spotify_smart_playlists.helpers import spotify_auth
-from typing import List, Dict, Any
+from typing import List, Dict
 from dateutil.parser import parse
-
-
-def process_track(track: Dict[str, Any]) -> Dict[str, str]:
-    return {
-        "track_id": track["id"],
-        "artist_ids": "|".join([artist["id"] for artist in track["artists"]]),
-        "name": track["name"],
-    }
 
 
 def main(database: str):
