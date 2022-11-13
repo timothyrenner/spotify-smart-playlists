@@ -20,7 +20,9 @@ def process_track(track: Dict[str, Any]) -> Dict[str, str]:
 def main(database: str):
 
     logger.info("Initializing Spotify client.")
-    spotify = spotipy.Spotify(client_credentials_manager=spotify_auth())
+    spotify = spotipy.Spotify(
+        client_credentials_manager=spotify_auth(database)
+    )
 
     logger.info("Pulling library tracks.")
     library_tracks_response = spotify.current_user_saved_tracks(limit=50)

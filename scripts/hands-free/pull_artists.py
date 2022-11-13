@@ -1,65 +1,76 @@
 import typer
 import spotipy
+import ibis
 import pandas as pd
-import os
 
 from loguru import logger
 from spotify_smart_playlists.helpers import spotify_auth
-from toolz import thread_last, mapcat, partition_all
-from typing import List
+from toolz import partition_all
+from typing import List, Dict
+from sqlalchemy.exc import NoSuchTableError
 
 
-def main(library_file: str, artists_file: str):
+def main(database: str):
     logger.info("Initializing Spotify client.")
-    spotify = spotipy.Spotify(client_credentials_manager=spotify_auth())
-
-    logger.info(f"Reading library from {library_file}.")
-    library_frame = pd.read_csv(library_file)
-
-    if not os.path.exists(artists_file):
-        logger.warning(
-            f"{artists_file} doesn't exist. " "Obtaining all artists."
-        )
-        artists_frame = pd.DataFrame()
-        artists_with_data = set()
-    else:
-        logger.info(f"Reading existing artists from {artists_file}.")
-        artists_frame = pd.read_csv(artists_file)
-        artists_with_data = set(artists_frame.artist_id.tolist())
-
-    batches = thread_last(
-        library_frame.artist_ids.tolist(),
-        (mapcat, lambda x: x.split("|")),
-        set,
-        (filter, lambda x: x not in artists_with_data),
-        (partition_all, 50),
+    spotify = spotipy.Spotify(
+        client_credentials_manager=spotify_auth(database)
     )
 
-    new_artists_frames: List[pd.DataFrame] = []
-    new_artists_pulled: int = 0
+    logger.info("Connecting to database.")
+    db = ibis.duckdb.connect(database)
 
-    for artist_batch in batches:
+    logger.info("Determining which artists need to be pulled.")
+    track_artists = db.table("track_artists")
+    artists_to_pull: List[str] = []
+    try:
+        artists = db.table("artists")
+        joined_artists = track_artists.left_join(
+            artists,
+            predicates=track_artists["artist_id"] == artists["id"],
+            suffixes=["_ta", "_a"],
+        )
+        artists_to_pull = (
+            joined_artists.filter(joined_artists.id.isnull())
+            .execute()
+            .artist_id.unique()
+            .tolist()
+        )
+    except NoSuchTableError:
+        logger.info("Table 'artists' doesn't exist. Pulling all artists.")
+        artists_to_pull = track_artists.execute().artist_id.unique().tolist()
+
+    logger.info(f"Pulling {len(artists_to_pull)} artists.")
+    for artist_batch in partition_all(50, artists_to_pull):
         logger.info(f"Pulling features for {len(artist_batch)} artists.")
         artists_response = spotify.artists(artist_batch)
-        new_artists_frame = pd.DataFrame(
-            [
+        new_artists: List[Dict[str, str]] = []
+        new_artist_genres: List[Dict[str, str]] = []
+        for artist in artists_response["artists"]:
+            new_artists.append(
                 {
-                    "artist_id": artist["id"],
-                    "artist_name": artist["name"],
-                    "genres": "|".join(artist["genres"]),
+                    "id": artist["id"],
+                    "name": artist["name"],
                 }
-                for artist in artists_response["artists"]
-            ]
+            )
+            for genre in artist["genres"]:
+                new_artist_genres.append(
+                    {
+                        "artist_id": artist["id"],
+                        "genre": genre,
+                    }
+                )
+        new_artists_frame = pd.DataFrame(new_artists)
+        new_artist_genres_frame = pd.DataFrame(new_artist_genres)
+        logger.info(f"Inserting {new_artists_frame.shape[0]} artists into db.")
+        db.load_data("artists", new_artists_frame, if_exists="append")
+        logger.info(
+            f"Inserting {new_artist_genres_frame.shape[0]} "
+            "artist genres into db."
         )
-        new_artists_frames.append(new_artists_frame)
-        new_artists_pulled += new_artists_frame.shape[0]
+        db.load_data(
+            "artist_genres", new_artist_genres_frame, if_exists="append"
+        )
 
-    logger.info(
-        f"Pulled {new_artists_pulled} new artists. Adding to existing artists."
-    )
-    artists_frame = pd.concat([artists_frame] + new_artists_frames)
-    logger.info(f"Saving updated artists to {artists_file}.")
-    artists_frame.to_csv(artists_file, index=False)
     logger.info("Done.")
 
 
