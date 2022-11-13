@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv, find_dotenv
 from loguru import logger
-from spotify_smart_playlists.helpers import CacheFileGithubHandler
+from spotify_smart_playlists.helpers import DuckDBEncryptedCacheHandler
 from spotipy.oauth2 import SpotifyOAuth
 
 logger.info("Loading dotenv file.")
@@ -28,7 +28,7 @@ if not SPOTIFY_REDIRECT_URI:
     raise ValueError(msg)
 
 
-def spotify_auth() -> SpotifyOAuth:
+def spotify_auth(database: str) -> SpotifyOAuth:
     scope = " ".join(
         [
             "playlist-read-private",
@@ -43,6 +43,6 @@ def spotify_auth() -> SpotifyOAuth:
         client_secret=SPOTIFY_CLIENT_SECRET,
         redirect_uri=SPOTIFY_REDIRECT_URI,
         scope=scope,
-        cache_handler=CacheFileGithubHandler(),
+        cache_handler=DuckDBEncryptedCacheHandler(database),
     )
     return client_credentials_manager
