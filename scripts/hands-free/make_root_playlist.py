@@ -1,214 +1,170 @@
 import typer
-import pandas as pd
+import ibis
+import warnings
 
 from omegaconf import OmegaConf
 from loguru import logger
 from typing import Dict, Any, List
+from functools import reduce
 from toolz import get
+from ibis.expr.types import Table
 
-
-def split_pipe_delimited_string(pipe_delimited_string: str) -> List[str]:
-    # The instance check makes this nan-safe.
-    if isinstance(pipe_delimited_string, str):
-        return pipe_delimited_string.split("|")
-    else:
-        return []
-
-
-# This will compose via pipes.
-def pipe_compose(series):
-    # Dropna is for the nan values,
-    # unique is because we blow out multiple artists per track
-    # and multiple genres per artist, so lots of dupes possible.
-    return "|".join(series.dropna().unique())
-
-
-def process_audio_features(
-    audio_features: pd.DataFrame, audio_features_config: Dict[str, Any]
-) -> pd.DataFrame:
-    queries: List[str] = []
-    for feature, values in audio_features_config.items():
-        if "min" in values:
-            queries.append(f"({feature}>={values['min']})")
-        if "max" in values:
-            queries.append(f"({feature}<={values['max']})")
-
-    query = "&".join(queries)
-    return audio_features.query(query)
-
-
-def process_artists(
-    artists: pd.DataFrame, artists_config: List[str]
-) -> pd.DataFrame:
-    return artists.query("artist_name.isin(@artists_config)")
-
-
-def process_genres(
-    artists: pd.DataFrame, genres_config: List[str]
-) -> pd.DataFrame:
-    queries: List[str] = []
-    for genre in genres_config:
-        queries.append(f"genres.str.contains('{genre}')")
-    query = "|".join(queries)
-    return (
-        artists.assign(genre=artists.genres.apply(split_pipe_delimited_string))
-        .explode("genre")
-        .query(query)
-    )
-
-
-def create_playlist_frame(
-    library: pd.DataFrame, artists: pd.DataFrame, audio_features: pd.DataFrame
-) -> pd.DataFrame:
-    exploded_library = library.assign(
-        artist_id=library.artist_ids.apply(split_pipe_delimited_string)
-    ).explode("artist_id")
-
-    final_tracks = (
-        exploded_library.merge(artists, on="artist_id")
-        # We merge on audio_features because it is filtered.
-        # We'll hydrate with the full information later.
-        .merge(audio_features, on="track_id")[
-            ["track_id", "name", "artist_ids"]
-        ]
-        .drop_duplicates()
-        .assign(rotate=True)  # Rotate tracks by default.
-        .reset_index()
-    )
-
-    return final_tracks
+# This gets old real damn quick idgaf about pandas indices that's why I'm using
+# duck in the first place.
+warnings.filterwarnings(
+    "ignore", message="duckdb-engine doesn't yet support reflection on indices"
+)
 
 
 def get_additional_tracks(
-    library: pd.DataFrame,
-    artists: pd.DataFrame,
+    library: Table,
+    artist_tracks: Table,
+    artists: Table,
     additional_tracks: List[Dict[str, str]],
-) -> pd.DataFrame:
-    additional_track_frames: List[pd.DataFrame] = []
+) -> Table:
+    tracks_with_artists = library.join(
+        artist_tracks,
+        predicates=(library["track_id"] == artist_tracks["track_id"]),
+        suffixes=("", "_r"),
+    )
+    tracks_with_artists = tracks_with_artists.join(
+        artists, predicates=(artists["id"] == tracks_with_artists["artist_id"])
+    ).select("track_id", "track_name", "name")
+    # There _has_ to be an easier way to rename a column but I cannot find it
+    # anywhere in the docs.
+    tracks_with_artists = tracks_with_artists.mutate(
+        artist_name=tracks_with_artists["name"]
+    ).drop("name")
+
+    additional_track_tables: List[Table] = []
     for additional_track in additional_tracks:
         additional_track_name = additional_track["name"]
         # First get all tracks that share the track name.
-        library_track = library.query(
-            f"name.str.lower()=='{additional_track_name.lower()}'"
+        additional_track_expr = (
+            tracks_with_artists["track_name"] == additional_track_name
         )
+        # If there's an artist disambiguate with an additional predicate.
         if "artist" in additional_track:
             artist_name = additional_track["artist"]
-            # Now merge with the artist and filter.
-            # ! I'm doing this a _lot_.
-            library_track = (
-                library_track.assign(
-                    artist_id=library_track.artist_ids.apply(
-                        split_pipe_delimited_string
-                    )
-                )
-                .explode("artist_id")
-                .merge(artists, on="artist_id")
-                # We just need to filter the artist down to disambiguate duped
-                # track names. Once we've done that we just get it into the
-                # regular playlist format we need before we hydrate.
-                .query(f"artist_name.str.lower()=='{artist_name.lower()}'")[
-                    ["track_id", "name", "artist_ids"]
-                ]
-                .drop_duplicates()
-                .assign(rotate=get("rotate", additional_track, False))
+            additional_track_expr = additional_track_expr & (
+                tracks_with_artists["artist_name"] == artist_name
             )
-        additional_track_frames.append(library_track)
-
-    return pd.concat(additional_track_frames).reset_index()
-
-
-def hydrate_track_frame(
-    track_frame: pd.DataFrame,
-    artists: pd.DataFrame,
-    audio_features: pd.DataFrame,
-) -> pd.DataFrame:
-    exploded_tracks = track_frame.assign(
-        artist_id=track_frame.artist_ids.apply(split_pipe_delimited_string)
-    ).explode("artist_id")
-    tracks_artists = (
-        exploded_tracks.merge(artists, on="artist_id")[
-            ["track_id", "artist_name", "genres"]
-        ]
-        .groupby("track_id")
-        .agg(
-            artist_names=pd.NamedAgg("artist_name", pipe_compose),
-            genres=pd.NamedAgg("genres", pipe_compose),
-        )
-    )
-    return track_frame.merge(tracks_artists, on="track_id").merge(
-        audio_features, on="track_id"
-    )
+        additional_track = tracks_with_artists.filter(
+            additional_track_expr
+        ).select("track_id")
+        # Add whether to rotate the track.
+        rotate = get("rotate", additional_track, True)
+        additional_track = additional_track.mutate(rotate=rotate)
+        additional_track_tables.append(additional_track)
+    # Now union them all.
+    return reduce(lambda a, x: a.union(x), additional_track_tables)
 
 
-def main(
-    playlist_config_file: str,
-    library_file: str,
-    audio_features_file: str,
-    artists_file: str,
-    root_playlist_file: str,
-):
+def create_audio_feature_filter(
+    audio_features: Table, audio_features_config: Dict[str, Any]
+) -> ibis.Expr:
+    filters: List[ibis.Expr] = []
+    for feature, values in audio_features_config.items():
+        if "min" in values:
+            filters.append(audio_features[feature] >= values["min"])
+        if "max" in values:
+            filter.append(audio_features[feature] <= values["max"])
+
+    # Combines each individual filter expression by "and"-ing them.
+    audio_feature_filter = reduce(lambda a, x: a & x, filters)
+    return audio_feature_filter
+
+
+def main(database: str, playlist_config_file: str):
     logger.info(f"Loading playlist conf from {playlist_config_file}.")
     playlist_config = OmegaConf.load(playlist_config_file)
 
-    logger.info(f"Loading library from {library_file}.")
-    library = pd.read_csv(library_file)
+    logger.info("Connecting to database.")
+    db = ibis.duckdb.connect(database)
 
-    logger.info(f"Loading audio features from {audio_features_file}.")
-    audio_features = pd.read_csv(audio_features_file)
-
-    logger.info(f"Loading artists from {artists_file}.")
-    artists = pd.read_csv(artists_file)
-
+    audio_features = db.table("track_audio_features")
     if "audio_features" in playlist_config:
         logger.info("Processing audio features.")
-        audio_features_processed = process_audio_features(
-            audio_features, dict(playlist_config.audio_features)
+        audio_feature_filter = create_audio_feature_filter(
+            audio_features, playlist_config["audio_features"]
         )
+        audio_features_filtered = audio_features.filter(audio_feature_filter)
     else:
-        audio_features_processed = audio_features.copy()
+        audio_features_filtered = audio_features
 
+    artists = db.table("artists")
     if "artists" in playlist_config:
         logger.info("Processing artists.")
-        artists_processed = process_artists(
-            artists, list(playlist_config.artists)
+        artists_filtered = artists.filter(
+            artists["name"].isin(list(playlist_config["artists"]))
         )
     else:
-        artists_processed = artists.copy()
+        artists_filtered = artists
 
+    artist_genres = db.table("artist_genres")
     if "genres" in playlist_config:
         logger.info("Processing genres.")
-        artists_processed = process_genres(
-            artists_processed, list(playlist_config.genres)
+        artist_genres_filtered = artist_genres.filter(
+            artist_genres["genre"].isin(list(playlist_config["genres"]))
         )
     else:
-        artists_processed = artists_processed.copy()
+        artist_genres_filtered = artist_genres
 
     # Do the joins to get the almost-final list of track / track names.
-    logger.info("Creating core playlist frame.")
-    playlist_frame = create_playlist_frame(
-        library, artists_processed, audio_features_processed
+    # First get all tracks that match the genres.
+    artist_tracks = db.table("track_artists")
+    artists_genres_filtered = artists_filtered.join(
+        artist_genres_filtered,
+        predicates=(
+            artists_filtered["id"] == artist_genres_filtered["artist_id"]
+        ),
+    ).select("artist_id")
+    # Now filter out all of those that don't match the artists we have
+    # filters for (if no filter, this is a no-op).
+    artists_filtered_with_track_ids = artists_genres_filtered.join(
+        artist_tracks,
+        predicates=(
+            artists_genres_filtered["artist_id"] == artist_tracks["artist_id"]
+        ),
+        suffixes=("", "_r"),
+    ).select("artist_id", "track_id")
+
+    # Now filter out all tracks that don't match audio feature conditions.
+    # This output is the final playlist.
+    playlist_tracks = (
+        artists_filtered_with_track_ids.join(
+            audio_features_filtered,
+            predicates=(
+                artists_filtered_with_track_ids["track_id"]
+                == audio_features_filtered["track_id"]
+            ),
+            suffixes=("", "_r"),
+        )
+        .select("track_id")
+        .mutate(rotate=True)
     )
 
-    # Add additional tracks.
+    # Add additional tracks that are specified.
     logger.info("Adding additional tracks to the core playlist frame.")
+    library_tracks = db.table("library_tracks")
     if "additional_tracks" in playlist_config:
-        additional_tracks = get_additional_tracks(
-            library, artists, list(playlist_config.additional_tracks)
+        playlist_tracks = playlist_tracks.union(
+            get_additional_tracks(
+                library_tracks,
+                artist_tracks,
+                artists,
+                list(playlist_config.additional_tracks),
+            )
         )
 
-        playlist_frame = pd.concat([playlist_frame, additional_tracks])
-
-    # Hydrate the playlist frame with additional info for debugging.
-    logger.info("Hydrating the playlist frame.")
-    hydrated_playlist_frame = hydrate_track_frame(
-        playlist_frame, artists, audio_features
-    )
+    logger.info("Executing query.")
+    playlist_frame = playlist_tracks.execute()
 
     logger.info(
-        f"Writing a root playlist with {hydrated_playlist_frame.shape[0]} "
-        f"to {root_playlist_file}."
+        f"Writing a root playlist with {playlist_frame.shape[0]} tracks "
+        f"to {playlist_config['name']}."
     )
-    hydrated_playlist_frame.to_csv(root_playlist_file, index=False)
+    db.load_data(playlist_config["name"], playlist_frame, if_exists="replace")
 
 
 if __name__ == "__main__":

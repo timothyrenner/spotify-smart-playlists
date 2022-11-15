@@ -27,6 +27,7 @@ def main(database: str):
                 {
                     "date_added": parse(track["added_at"]),
                     "track_id": track["track"]["id"],
+                    "track_name": track["track"]["name"],
                 }
             )
             for artist in track["track"]["artists"]:
