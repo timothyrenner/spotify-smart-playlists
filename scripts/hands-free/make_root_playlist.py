@@ -32,6 +32,8 @@ def get_additional_tracks(
     ).select("track_id", "track_name", "name")
     # There _has_ to be an easier way to rename a column but I cannot find it
     # anywhere in the docs.
+    # For later - relabel
+    # https://ibis-project.org/docs/3.2.0/api/expressions/tables/#ibis.expr.types.relations.Table.relabel
     tracks_with_artists = tracks_with_artists.mutate(
         artist_name=tracks_with_artists["name"]
     ).drop("name")
@@ -49,13 +51,13 @@ def get_additional_tracks(
             additional_track_expr = additional_track_expr & (
                 tracks_with_artists["artist_name"] == artist_name
             )
-        additional_track = tracks_with_artists.filter(
+        additional_track_table = tracks_with_artists.filter(
             additional_track_expr
         ).select("track_id")
         # Add whether to rotate the track.
         rotate = get("rotate", additional_track, True)
-        additional_track = additional_track.mutate(rotate=rotate)
-        additional_track_tables.append(additional_track)
+        additional_track_table = additional_track_table.mutate(rotate=rotate)
+        additional_track_tables.append(additional_track_table)
     # Now union them all.
     return reduce(lambda a, x: a.union(x), additional_track_tables)
 

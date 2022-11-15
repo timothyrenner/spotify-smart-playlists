@@ -9,3 +9,4 @@ dependencies:
       - ipython
       - jupyter
       - plotly
+      - altair
