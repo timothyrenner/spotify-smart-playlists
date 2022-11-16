@@ -63,7 +63,9 @@ jobs:
           git commit -m "Update datasets: ${timestamp}."
 
       - name: git push
-        run: git push
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: DVC push
         run: dvc push
