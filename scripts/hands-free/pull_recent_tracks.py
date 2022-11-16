@@ -23,7 +23,7 @@ def main(database: str):
         max_date = db.table("play_history").played_at.max().execute()
     except NoSuchTableError:
         logger.info("Table 'play_history' doesn't exist. It will be created.")
-        max_date = parse("1970-01-01")
+        max_date = parse("1970-01-01T00:00:00.000Z")
 
     logger.info("Pulling recent tracks.")
     recent_tracks_response = spotify.current_user_recently_played()

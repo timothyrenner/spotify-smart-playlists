@@ -70,7 +70,7 @@ def create_audio_feature_filter(
         if "min" in values:
             filters.append(audio_features[feature] >= values["min"])
         if "max" in values:
-            filter.append(audio_features[feature] <= values["max"])
+            filters.append(audio_features[feature] <= values["max"])
 
     # Combines each individual filter expression by "and"-ing them.
     audio_feature_filter = reduce(lambda a, x: a & x, filters)

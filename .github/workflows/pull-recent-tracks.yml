@@ -16,14 +16,6 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Set up environment
-        run: |
-          echo '${{ secrets.SPOTIPY_CREDENTIALS }}' > .cache
-          echo GH_SPOTIFY_ACCESS_TOKEN=${{ secrets.GH_SPOTIFY_ACCESS_TOKEN }} >> $GITHUB_ENV
-          echo SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }} >> $GITHUB_ENV
-          echo SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }} >> $GITHUB_ENV
-          echo SPOTIFY_REDIRECT_URI=${{ secrets.SPOTIFY_REDIRECT_URI }} >> $GITHUB_ENV
-
       - name: Set up python
         uses: actions/setup-python@v2
         with:
@@ -48,23 +40,25 @@ jobs:
           pip install -e .
 
       - name: Pull DVC
-        run: dvc pull pull-recent-tracks
+        run: dvc pull
 
-      - name: Run DVC repro
-        run: dvc repro pull-recent-tracks
+      - name: Pull Recent Tracks
+        run: make recent_tracks
+        env:
+          SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_REDIRECT_URI=${{ secrets.SPOTIFY_REDIRECT_URI }}
+          SPOTIFY_CACHE_FERNET_KEY=${{ secrets.SPOTIFY_CACHE_FERNET_KEY }}
 
       - name: git add
         continue-on-error: true
         run: |
-          git add dvc.lock
+          git add spotify.db.dvc
           timestamp=$(date -u)
           git commit -m "Update recently played: ${timestamp}."
 
       - name: git push
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GH_SPOTIFY_ACCESS_TOKEN }}
-          branch: ${{ github.ref }}
+        run: git push
 
       - name: DVC push
-        run: dvc push pull-recent-tracks
+        run: dvc push

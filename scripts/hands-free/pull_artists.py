@@ -2,12 +2,19 @@ import typer
 import spotipy
 import ibis
 import pandas as pd
+import warnings
 
 from loguru import logger
 from spotify_smart_playlists.helpers import spotify_auth
 from toolz import partition_all
 from typing import List, Dict
 from sqlalchemy.exc import NoSuchTableError
+
+# This gets old real damn quick idgaf about pandas indices that's why I'm using
+# duck in the first place.
+warnings.filterwarnings(
+    "ignore", message="duckdb-engine doesn't yet support reflection on indices"
+)
 
 
 def main(database: str):

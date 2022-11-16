@@ -1,6 +1,7 @@
 import typer
 import spotipy
 import ibis
+import warnings
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
@@ -10,6 +11,13 @@ from loguru import logger
 from random import sample
 from typing import List, Optional, Any, Dict
 from toolz import thread_first
+from omegaconf import OmegaConf
+
+# This gets old real damn quick idgaf about pandas indices that's why I'm using
+# duck in the first place.
+warnings.filterwarnings(
+    "ignore", message="duckdb-engine doesn't yet support reflection on indices"
+)
 
 
 def get_recommended_tracks(
@@ -51,10 +59,13 @@ def get_playlist(
 
 def main(
     database: str,
-    playlist_name: str,
+    playlist_file: str,
     num_tracks: int = 25,
     num_recommendations: int = 5,
 ):
+    logger.info(f"Getting playlist name from {playlist_file}.")
+    playlist_config = OmegaConf.load(playlist_file)
+    playlist_name = playlist_config.name
     logger.info("Connecting to database.")
     db = ibis.duckdb.connect(database)
 
