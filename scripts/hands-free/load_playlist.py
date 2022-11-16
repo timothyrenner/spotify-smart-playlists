@@ -1,16 +1,23 @@
 import typer
 import spotipy
-import pandas as pd
-import os
+import ibis
+import warnings
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from dateutil.tz import tz
 from spotify_smart_playlists.helpers import spotify_auth
 from loguru import logger
-from random import sample, shuffle
+from random import sample
 from typing import List, Optional, Any, Dict
-from toolz import thread_last, get, thread_first
+from toolz import thread_first
+from omegaconf import OmegaConf
+
+# This gets old real damn quick idgaf about pandas indices that's why I'm using
+# duck in the first place.
+warnings.filterwarnings(
+    "ignore", message="duckdb-engine doesn't yet support reflection on indices"
+)
 
 
 def get_recommended_tracks(
@@ -51,46 +58,55 @@ def get_playlist(
 
 
 def main(
-    root_playlist_file: str,
-    play_history_file: str,
+    database: str,
+    playlist_file: str,
     num_tracks: int = 25,
     num_recommendations: int = 5,
 ):
-    logger.info(f"Loading play history from {play_history_file}.")
-    play_history = pd.read_csv(play_history_file)
+    logger.info(f"Getting playlist name from {playlist_file}.")
+    playlist_config = OmegaConf.load(playlist_file)
+    playlist_name = playlist_config.name
+    logger.info("Connecting to database.")
+    db = ibis.duckdb.connect(database)
 
     logger.info("Getting most recently played tracks.")
-    play_history.loc[:, "last_played"] = pd.to_datetime(
-        play_history.last_played
+    play_history = db.table("play_history")
+    window = ibis.window(group_by="track_id", order_by=ibis.desc("played_at"))
+    play_history = play_history.mutate(
+        play_rank=play_history.track_id.rank().over(window)
     )
-    play_history.loc[:, "rank"] = play_history.groupby("track_id")[
-        "last_played"
-    ].rank(method="first", ascending=False, na_option="top")
-
-    tracks_latest_played = play_history.query("rank==1")
-
-    logger.info(f"Loading root playlist from {root_playlist_file}.")
-    root_playlist = pd.read_csv(root_playlist_file)
-
-    if root_playlist.empty:
-        raise ValueError(f"No tracks in {root_playlist_file}.")
 
     one_week_ago = datetime.now(tz.tzutc()) - relativedelta(weeks=1)
+    tracks_latest_played = play_history.filter(
+        (play_history.play_rank == 0) & (play_history.played_at < one_week_ago)
+    )
+
+    root_playlist = db.table(playlist_name)
+
     logger.info(f"Removing tracks played after {one_week_ago}.")
-    root_playlist = root_playlist.merge(
-        tracks_latest_played, on="track_id", how="left"
-    ).query("last_played.isnull() | (last_played<@one_week_ago) | ~rotate")
+    reduced_root_playlist = root_playlist.left_join(
+        tracks_latest_played,
+        predicates=(root_playlist.track_id == tracks_latest_played.track_id),
+        suffixes=("", "_r"),
+    )
+    reduced_root_playlist = reduced_root_playlist.filter(
+        reduced_root_playlist.played_at.isnull()
+        | (reduced_root_playlist.rotate is False)
+    )
 
     logger.info("Initializing Spotify client.")
-    spotify = spotipy.Spotify(client_credentials_manager=spotify_auth())
+    spotify = spotipy.Spotify(
+        client_credentials_manager=spotify_auth(database)
+    )
 
     num_root_tracks = num_tracks - num_recommendations
     logger.info(f"Downsampling root playlist to {num_root_tracks}.")
-    new_playlist_tracks = list(
-        sample(
-            root_playlist.track_id.tolist(),
-            min(root_playlist.shape[0], num_root_tracks),
-        )
+    new_playlist_tracks = (
+        reduced_root_playlist.mutate(sample=ibis.random())
+        .sort_by("sample")
+        .limit(num_root_tracks)
+        .execute()
+        .track_id.tolist()
     )
     while len(new_playlist_tracks) < num_tracks:
         num_recommendations_to_pull = min(
@@ -103,18 +119,15 @@ def main(
             new_playlist_tracks, num_recommendations_to_pull, spotify
         )
 
-    new_playlist_name = thread_last(
-        root_playlist_file, os.path.basename, os.path.splitext, (get, 0)
-    )
-    logger.info(f"Figuring out if {new_playlist_name} exists already.")
-    new_playlist_object = get_playlist(new_playlist_name, spotify)
+    logger.info(f"Figuring out if {playlist_name} exists already.")
+    new_playlist_object = get_playlist(playlist_name, spotify)
     if not new_playlist_object:
-        logger.info(f"Playlist {new_playlist_name} doesn't exist. Creating.")
+        logger.info(f"Playlist {playlist_name} doesn't exist. Creating.")
         new_playlist_object = spotify.user_playlist_create(
-            spotify.me()["id"], new_playlist_name
+            spotify.me()["id"], playlist_name
         )
 
-    logger.info(f"Updating tracks for {new_playlist_name}.")
+    logger.info(f"Updating tracks for {playlist_name}.")
     spotify.user_playlist_replace_tracks(
         spotify.me()["id"], new_playlist_object["id"], new_playlist_tracks
     )

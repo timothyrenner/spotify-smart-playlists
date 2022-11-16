@@ -131,3 +131,5 @@ dmypy.json
 # csv.
 *.csv
 notebooks/
+*.db
+.vscode

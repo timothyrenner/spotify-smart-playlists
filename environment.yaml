@@ -7,5 +7,6 @@ dependencies:
   - pip
   - pip:
       - ipython
-      - jupyterlab
+      - jupyter
       - plotly
+      - altair

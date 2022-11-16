@@ -1,0 +1,4 @@
+outs:
+- md5: 928520e3826f8a52bdf841a101363d1f
+  size: 5255168
+  path: spotify.db
