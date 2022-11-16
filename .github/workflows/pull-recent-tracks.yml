@@ -45,10 +45,10 @@ jobs:
       - name: Pull Recent Tracks
         run: make recent_tracks
         env:
-          SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }}
-          SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }}
-          SPOTIFY_REDIRECT_URI=${{ secrets.SPOTIFY_REDIRECT_URI }}
-          SPOTIFY_CACHE_FERNET_KEY=${{ secrets.SPOTIFY_CACHE_FERNET_KEY }}
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_REDIRECT_URI: ${{ secrets.SPOTIFY_REDIRECT_URI }}
+          SPOTIFY_CACHE_FERNET_KEY: ${{ secrets.SPOTIFY_CACHE_FERNET_KEY }}
 
       - name: git add
         continue-on-error: true
