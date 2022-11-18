@@ -55,6 +55,9 @@ jobs:
           SPOTIFY_REDIRECT_URI: ${{ secrets.SPOTIFY_REDIRECT_URI }}
           SPOTIFY_CACHE_FERNET_KEY: ${{ secrets.SPOTIFY_CACHE_FERNET_KEY }}
 
+      - name: DVC add
+        run: dvc add spotify.db
+
       - name: git add
         continue-on-error: true
         run: |
