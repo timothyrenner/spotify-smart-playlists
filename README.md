@@ -17,8 +17,8 @@ This project is broken into several steps cause I wanted to start simple and get
 Obviously this is just for me but if you're forking this or something these are the actual things you need to do, but you might want to change the repo secret names.
 Just be sure to update the workflows that use them (`.github/workflows`).
 
-In order to persist the secrets to github (meaning the token can refresh entirely within actions), you need a personal access token with repo-level scope.
-Store it as `GH_SPOTIFY_ACCESS_TOKEN`.
+Credentials for Spotify are stored in the database itself, encrypted.
+Generate a Fernet key and save it as `SPOTIFY_CACHE_FERNET_KEY` in your `.env` file and as a GH secret.
 
 In order to access Spotify's API, you'll need a client / secret ID.
 Hit up the Spotify developer dashboard to create an app and get one.
@@ -30,13 +30,7 @@ Download those keys and store them as a repo secret as `MUSIC_DVC_PUSHER_SA_CRED
 You'll also need the project id as a secret, `PERSONAL_PROJECT_ID`.
 
 The last thing you need to do is run the scripts locally at least once, so that you can perform the authorization flow and grant the app the Spotify scopes it needs.
-Actions can't do this for you.
-
-## Simple autorotating playlists
-
-This one's pretty simple - it takes some seed playlists and rotates tracks, salting them with recommendations.
-Any tracks in "recently played" (up to 50), will be removed with each run.
-Playlists and stuff are hard coded in the `simple-playlists` GH workflow.
+Actions can't do this for you because the browser needs to open.
 
 ## Hands free autorotating playlists
 
@@ -72,16 +66,26 @@ genres, artists, and additional_tracks are all pretty self explanatory.
 audio_features are features of the actual songs themselves, and there are a lot of them.
 [Spotify](https://developer.spotify.com/documentation/web-api/reference/#objects-index) - look under "Audio Features Object" - has detailed what they are and what they mean in their API documentation.
 
-Once those playlists are defined, add them to `params.yaml`, and the DVC pipeline will pick them up and build playlists out of them.
+Once those playlists are defined, add them to `params.yaml`, and the pipeline will pick them up and build playlists out of them.
 It removes any tracks played in the last week and salts the playlists with recommendations too.
 Just like the tracks you like and they'll make their way into these playlists, hands free.
 Hence the name 😄.
 
-### Note
-DVC will throw an error if it sees a new playlist config file but doesn't have the corresponding root playlist files.
-This happens when adding a new playlist config file without repro-ing the pipeline locally.
+What the pipeline does is finds all tracks in the library that matches the criteria defined in the file and puts them in what I call a "root" playlist.
+This enables me to inspect the playlists (they're tables in the database) to debug.
+When it's time to push a playlist to Spotify, the pipeline will remove tracks from the root that were recently played, downsample to about 20, throw in some recommended tracks based on that sample, and push it to Spotify.
+It does not save that playlist in the DB but I am considering adding that if I have to do any more debugging.
 
-*** Repro the pipeline locally when adding a config based playlist. ***
+## Running the pipeline
+
+There are three stages to the pipeline.
+Originally this was a DVC pipeline but since I switched to using DuckDB instead of CSV files (good move, for the record) I didn't need something as heavy as a DVC pipeline and switched workflow coordination to make.
+
+```
+make recent_tracks # Pulls recently played tracks.
+make library # Pulls library, updates artist, genre, audio feature tables, and root playlists.
+make load_playlists # Creates smaller playlists from the root playlists and pushes them to Spotify.
+```
 
 ## Machine learned auto rotating playlists
 
