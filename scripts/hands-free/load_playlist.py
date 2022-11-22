@@ -77,20 +77,28 @@ def main(
     )
 
     one_week_ago = datetime.now(timezone.utc) - relativedelta(weeks=1)
-    tracks_latest_played = play_history.filter(
-        (play_history.play_rank == 0) & (play_history.played_at > one_week_ago)
+    tracks_recently_playesd = play_history.filter(
+        # First predicate ensures that play is the latest play.
+        # Second predicate isolates plays to less than one week ago.
+        (play_history.play_rank == 0)
+        & (play_history.played_at > one_week_ago)
     )
 
     root_playlist = db.table(playlist_name)
 
     logger.info(f"Removing tracks played after {one_week_ago}.")
     reduced_root_playlist = root_playlist.left_join(
-        tracks_latest_played,
-        predicates=(root_playlist.track_id == tracks_latest_played.track_id),
+        tracks_recently_playesd,
+        predicates=(
+            root_playlist.track_id == tracks_recently_playesd.track_id
+        ),
         suffixes=("", "_r"),
     )
     reduced_root_playlist = reduced_root_playlist.filter(
+        # Tracks that were played in the last week will not have null for
+        # played_at, so this predicate removes them...
         reduced_root_playlist.played_at.isnull()
+        # ... unless rotate is false, then it's kept in.
         | (reduced_root_playlist.rotate is False)
     )
 
