@@ -4,8 +4,8 @@ import ibis
 import warnings
 
 from datetime import datetime
+from datetime import timezone
 from dateutil.relativedelta import relativedelta
-from dateutil.tz import tz
 from spotify_smart_playlists.helpers import spotify_auth
 from loguru import logger
 from random import sample
@@ -76,9 +76,9 @@ def main(
         play_rank=play_history.track_id.rank().over(window)
     )
 
-    one_week_ago = datetime.now(tz.tzutc()) - relativedelta(weeks=1)
+    one_week_ago = datetime.now(timezone.utc) - relativedelta(weeks=1)
     tracks_latest_played = play_history.filter(
-        (play_history.play_rank == 0) & (play_history.played_at < one_week_ago)
+        (play_history.play_rank == 0) & (play_history.played_at > one_week_ago)
     )
 
     root_playlist = db.table(playlist_name)
