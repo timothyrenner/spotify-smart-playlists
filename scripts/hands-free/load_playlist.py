@@ -76,17 +76,17 @@ def main(
         play_rank=play_history.track_id.rank().over(window)
     )
 
-    one_week_ago = datetime.now(timezone.utc) - relativedelta(weeks=1)
+    too_soon = datetime.now(timezone.utc) - relativedelta(weeks=2)
     tracks_recently_playesd = play_history.filter(
         # First predicate ensures that play is the latest play.
         # Second predicate isolates plays to less than one week ago.
         (play_history.play_rank == 0)
-        & (play_history.played_at > one_week_ago)
+        & (play_history.played_at > too_soon)
     )
 
     root_playlist = db.table(playlist_name)
 
-    logger.info(f"Removing tracks played after {one_week_ago}.")
+    logger.info(f"Removing tracks played after {too_soon}.")
     reduced_root_playlist = root_playlist.left_join(
         tracks_recently_playesd,
         predicates=(
