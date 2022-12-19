@@ -1,0 +1,26 @@
+name: synthwave_flow
+
+audio_features:
+  tempo:
+    min: 100
+  instrumentalness:
+    min: 0.75
+
+genres:
+  - synthwave
+  - darksynth
+  - cyberpunk
+  - spacewave
+  - nightrun
+  - filter house
+
+additional_tracks:
+  - name: Feel The Steel
+    artist: Muscle
+    rotate: false
+  - name: Intergalactic Highway
+    artist: Dynatron
+    rotate: false
+  - name: Excess
+    artist: Robots With Rayguns
+    rotate: false
