@@ -3,5 +3,5 @@ black
 mypy
 typer
 python-dateutil
-duckdb>=0.5.1,<0.6
+duckdb>=0.7
 ibis-framework[duckdb]
