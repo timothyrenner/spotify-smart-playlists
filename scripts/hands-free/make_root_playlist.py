@@ -1,6 +1,7 @@
 import typer
 import ibis
 import warnings
+import pandas as pd
 
 from omegaconf import OmegaConf
 from loguru import logger
@@ -38,7 +39,7 @@ def get_additional_tracks(
         artist_name=tracks_with_artists["name"]
     ).drop("name")
 
-    additional_track_tables: List[Table] = []
+    additional_track_tables: List[pd.DataFrame] = []
     for additional_track in additional_tracks:
         additional_track_name = additional_track["name"]
         # First get all tracks that share the track name.
@@ -57,9 +58,9 @@ def get_additional_tracks(
         # Add whether to rotate the track.
         rotate = get("rotate", additional_track, True)
         additional_track_table = additional_track_table.mutate(rotate=rotate)
-        additional_track_tables.append(additional_track_table)
+        additional_track_tables.append(additional_track_table.execute())
     # Now union them all.
-    return reduce(lambda a, x: a.union(x), additional_track_tables)
+    return pd.concat(additional_track_tables)
 
 
 def create_audio_feature_filter(
@@ -133,7 +134,7 @@ def main(database: str, playlist_config_file: str):
 
     # Now filter out all tracks that don't match audio feature conditions.
     # This output is the final playlist.
-    playlist_tracks = (
+    playlist_tracks_with_audio_features = (
         artists_filtered_with_track_ids.join(
             audio_features_filtered,
             predicates=(
@@ -145,28 +146,32 @@ def main(database: str, playlist_config_file: str):
         .select("track_id")
         .mutate(rotate=True)
     )
+    
+    logger.info("Executing query.")
+    playlist_tracks = playlist_tracks_with_audio_features.execute()
 
     # Add additional tracks that are specified.
     logger.info("Adding additional tracks to the core playlist frame.")
     library_tracks = db.table("library_tracks")
     if "additional_tracks" in playlist_config:
-        playlist_tracks = playlist_tracks.union(
+        logger.info("Getting additional tracks.")
+        playlist_tracks = pd.concat([
+            playlist_tracks,
             get_additional_tracks(
                 library_tracks,
                 artist_tracks,
                 artists,
-                list(playlist_config.additional_tracks),
-            )
+                list(playlist_config.additional_tracks)
+            )]
         )
 
-    logger.info("Executing query.")
-    playlist_frame = playlist_tracks.execute()
+
 
     logger.info(
-        f"Writing a root playlist with {playlist_frame.shape[0]} tracks "
+        f"Writing a root playlist with {playlist_tracks.shape[0]} tracks "
         f"to {playlist_config['name']}."
     )
-    db.load_data(playlist_config["name"], playlist_frame, if_exists="replace")
+    db.create_table(playlist_config["name"], playlist_tracks, overwrite=True)
 
 
 if __name__ == "__main__":
