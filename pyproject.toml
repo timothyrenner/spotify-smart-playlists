@@ -13,10 +13,11 @@ dependencies = [
     "pynacl",
     "toolz",
     "omegaconf",
-    "polars",
+    "polars[pyarrow]",
     "typer",
     "duckdb>=0.7",
-    "python-dateutil"
+    "python-dateutil",
+    "prefect==2.8.7"
 ]
 
 [project.optional-dependencies]

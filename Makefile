@@ -16,46 +16,52 @@ load_playlists:
 
 ####### NEWER COMMANDS HERE #######
 
-.PHONY: env dev-env lint format check
-
+.PHONY: env
 ## Install for deployment.
-install:
+install: env
 	python -m pip install -e .
 
+.PHONY: install-dev
 ## Install for development.
-install-dev: install
+install-dev: install dev-env
 	python -m pip install -e ".[dev]"
 
-build:
+.PHONY: build
+## Compile the dependency files from pyproject.
+build: pyproject.toml
 	pip-compile pyproject.toml \
-		--resolver=backtracking \
 		--output-file=deps/requirements.txt
 	pip-compile pyproject.toml \
-		--resolver=backtracking \
 		--extra dev \
 		--output-file=deps/dev-requirements.txt
 
+.PHONY: env
 ## Install non-dev dependencies.
-env:
+env: build
 	pip-sync deps/requirements.txt
 
+.PHONY: dev-env
 ## Install dev and non-dev dependencies.
-dev-env:
+dev-env: build
 	pip-sync deps/dev-requirements.txt
 
+.PHONY: lint
 ## Lint project with ruff.
 lint:
 	python -m ruff .
 
+.PHONY: format
 ## Format imports and code.
 format:
 	python -m ruff . --fix
 	python -m black .
 
+.PHONY: check
 ## Check linting and formatting.
 check:
 	python -m ruff check .
 	python -m black --check .
+	python -m mypy .
 
 #################################################################################
 # Self Documenting Commands                                                     #
