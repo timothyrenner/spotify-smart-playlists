@@ -1,7 +1,0 @@
-ruff
-black
-mypy
-typer
-python-dateutil
-duckdb>=0.7
-ibis-framework[duckdb]
