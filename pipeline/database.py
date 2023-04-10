@@ -27,4 +27,7 @@ def save_to_database(
             f"CREATE OR REPLACE TABLE {table} AS SELECT * FROM data_frame"
         )
     else:
-        database.execute(f"INSERT INTO {table} SELECT * FROM data_frame")
+        columns = ",".join(data_frame.columns)
+        database.execute(
+            f"INSERT INTO {table} ({columns}) SELECT * FROM data_frame"
+        )
