@@ -9,20 +9,15 @@ import duckdb
 from duckdb import DuckDBPyConnection
 from datetime import datetime
 import polars as pl
-import pytz
 
 
 @task(name="Get latest played_at value")
 def get_latest_played_at_task(database: DuckDBPyConnection) -> datetime:
     logger = get_run_logger()
     logger.info("Getting latest played_at value from play_history table.")
-    return (
-        database.sql("SELECT MAX(played_at) FROM play_history").fetchone()[0]
-        # Duckdb does not store time zones.
-        # Spotify's api returns datetimes in UTC, which is what we save in the
-        # db, so the tz needs to be added.
-        .replace(tzinfo=pytz.UTC)
-    )
+    return database.sql(
+        "SELECT MAX(played_at) AT TIME ZONE 'UTC' FROM play_history"
+    ).fetchone()[0]
 
 
 @task(name="Get recently played tracks")

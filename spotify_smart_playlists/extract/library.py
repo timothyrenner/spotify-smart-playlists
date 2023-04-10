@@ -32,7 +32,7 @@ def pull_library_tracks(
         for track in library_tracks_response["items"]:
             library_tracks.append(
                 LibraryTrack(
-                    date_added=parse(track["added_at"]),
+                    date_added=parse(track["added_at"]).replace(tzinfo=None),
                     track_id=track["track"]["id"],
                     track_name=track["track"]["name"],
                 )
