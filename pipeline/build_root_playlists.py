@@ -9,6 +9,7 @@ from typing import List
 from spotify_smart_playlists.playlists import (
     PlaylistConfig,
     playlist_config_from_dict,
+    make_root_playlist,
 )
 import yaml
 
@@ -28,6 +29,13 @@ def get_playlist_configs_task(
     return playlist_configs
 
 
+@task("Make root playlist")
+def make_root_playlist_task(
+    database: DuckDBPyConnection, playlist_config: PlaylistConfig
+) -> pl.DataFrame:
+    pass
+
+
 @flow(name="Build root playlists")
 def build_root_playlists(
     database_file: str = "spotify.db",
@@ -36,3 +44,10 @@ def build_root_playlists(
     logger = get_run_logger()
 
     database = duckdb.connect(database_file)
+    playlist_configs = get_playlist_configs_task(playlist_config_dir)
+
+    for playlist_config in playlist_configs:
+        logger.info(f"Getting tracks for {playlist_config.name}")
+        root_playlists.append(
+            make_root_playlist_task(database, playlist_config)
+        )
