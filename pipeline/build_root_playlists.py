@@ -14,7 +14,7 @@ from spotify_smart_playlists.playlists import (
 import yaml
 
 
-@task("Get playlist configs")
+@task(name="Get playlist configs")
 def get_playlist_configs_task(
     playlist_config_dir: Path,
 ) -> List[PlaylistConfig]:
@@ -29,11 +29,12 @@ def get_playlist_configs_task(
     return playlist_configs
 
 
-@task("Make root playlist")
+@task(name="Make root playlist")
 def make_root_playlist_task(
     database: DuckDBPyConnection, playlist_config: PlaylistConfig
 ) -> pl.DataFrame:
-    pass
+    logger = get_run_logger()
+    return make_root_playlist(database, playlist_config, logger=logger)
 
 
 @flow(name="Build root playlists")
@@ -46,8 +47,23 @@ def build_root_playlists(
     database = duckdb.connect(database_file)
     playlist_configs = get_playlist_configs_task(playlist_config_dir)
 
+    root_playlists: List[pl.DataFrame] = []
     for playlist_config in playlist_configs:
         logger.info(f"Getting tracks for {playlist_config.name}")
         root_playlists.append(
-            make_root_playlist_task(database, playlist_config)
+            make_root_playlist_task(database, playlist_config).with_columns(
+                name=pl.lit(playlist_config.name)
+            )
         )
+    root_playlists_frame = pl.concat(root_playlists)
+    logger.info(f"Saving all root playlists to {database}.")
+    save_to_database(
+        database=database,
+        table="root_playlists",
+        data_frame=root_playlists_frame,
+        create_or_replace=True,
+    )
+
+
+if __name__ == "__main__":
+    typer.run(build_root_playlists)
