@@ -1,7 +1,6 @@
 import os
 
 from dotenv import load_dotenv, find_dotenv
-from loguru import logger
 from spotify_smart_playlists.helpers import DuckDBEncryptedCacheHandler
 from spotipy.oauth2 import SpotifyOAuth
 from dataclasses import dataclass

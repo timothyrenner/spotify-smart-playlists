@@ -6,7 +6,6 @@ from dataclasses import dataclass, asdict
 from typing import List
 from toolz import get
 from dateutil.parser import parse
-import pytz
 
 
 @dataclass
