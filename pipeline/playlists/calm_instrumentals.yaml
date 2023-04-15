@@ -1,0 +1,15 @@
+name: Calm Instrumental 
+
+audio_features:
+  instrumentalness:
+    min: 0.75
+  energy:
+    max: 0.5
+  loudness:
+    max: -10.0
+
+genres:
+  - post-rock
+  - compositional ambient
+  - ambient
+  - drone
