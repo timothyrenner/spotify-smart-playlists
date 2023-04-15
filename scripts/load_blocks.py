@@ -2,6 +2,7 @@ import typer
 from dotenv import load_dotenv, find_dotenv
 from loguru import logger
 import json
+from prefect.infrastructure.process import Process
 from prefect.blocks.system import Secret
 from prefect.filesystems import GCS
 from prefect_gcp import GcpCredentials
@@ -38,6 +39,10 @@ def main():
     logger.info("Creating a block for the Spotify redirect URI.")
     redirect_uri_secret = Secret(value=spotify_credentials.redirect_uri)
     redirect_uri_secret.save(name="spotify-redirect-uri", overwrite=True)
+
+    logger.info("Creating infrastructure block for local processes.")
+    local_process_infrastructure = Process()
+    local_process_infrastructure.save(name="spotify-local", overwrite=True)
 
     logger.info("Getting service account creds.")
     gcp_credentials = GcpCredentials.load("prefect-gcs-rw")
