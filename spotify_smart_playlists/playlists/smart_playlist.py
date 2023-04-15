@@ -70,7 +70,7 @@ def get_tracks_for_playlist(
                 ON lp.track_id = rp.track_id
             WHERE
                 rp.name = '{playlist_name}' AND
-                lp.played_at < (CURRENT_DATE - INTERVAL 14 DAY)
+                DATE_DIFF('day', lp.played_at, CURRENT_DATE) > 14
             ORDER BY RANDOM()
             LIMIT {num_tracks}
         """

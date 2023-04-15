@@ -1,6 +1,7 @@
 import typer
 from prefect import task, flow, get_run_logger
 import duckdb
+import polars as pl
 from duckdb import DuckDBPyConnection
 from typing import Optional, List
 from spotify_smart_playlists.playlists import (
@@ -71,6 +72,28 @@ def load_playlist_to_spotify_task(
     )
 
 
+@task(name="Validate playlist tracks")
+def validate_playlist_tracks_task(
+    database: DuckDBPyConnection, playlist_tracks: List[str]
+):
+    logger = get_run_logger()
+    logger.info("Checking playlist tracks to ensure they are valid.")
+    playlist_tracks_frame = pl.DataFrame().with_columns(  # noqa
+        track_id=pl.Series(playlist_tracks)
+    )
+    invalid_tracks = database.sql(
+        """
+            SELECT ph.track_id
+            FROM play_history AS ph
+            INNER JOIN playlist_tracks_frame AS ptf ON
+            ph.track_id = ptf.track_id
+            GROUP BY ph.track_id
+            HAVING DATE_DIFF('day', MAX(ph.played_at), CURRENT_DATE) <= 14
+        """
+    ).pl()
+    assert invalid_tracks.is_empty()
+
+
 @flow(name="Load smart playlists")
 def load_smart_playlists(
     database_file: str = "spotify.db",
@@ -106,6 +129,7 @@ def load_smart_playlists(
 
     for root_playlist_name in root_playlist_names:
         tracks = get_tracks_for_playlist_task(database, root_playlist_name)
+        validate_playlist_tracks_task(database, tracks)
         num_recommended_tracks = 30 - len(tracks)
         tracks += get_recommended_tracks_task(
             spotify, tracks, num_recommended_tracks
