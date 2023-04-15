@@ -1,7 +1,10 @@
 import typer
 from dotenv import load_dotenv, find_dotenv
 from loguru import logger
+import json
 from prefect.blocks.system import Secret
+from prefect.filesystems import GCS
+from prefect_gcp import GcpCredentials
 import os
 from spotify_smart_playlists.helpers import (
     get_spotify_credentials_from_environment,
@@ -35,6 +38,18 @@ def main():
     logger.info("Creating a block for the Spotify redirect URI.")
     redirect_uri_secret = Secret(value=spotify_credentials.redirect_uri)
     redirect_uri_secret.save(name="spotify-redirect-uri", overwrite=True)
+
+    logger.info("Getting service account creds.")
+    gcp_credentials = GcpCredentials.load("prefect-gcs-rw")
+
+    logger.info("Configuring storage block.")
+    gcs = GCS(
+        bucket_path="trenner-datasets/spotify",
+        service_account_info=json.dumps(
+            gcp_credentials.service_account_info.dict()
+        ),
+    )
+    gcs.save(name="spotify-smart-playlists-storage")
 
     logger.info("All blocks configured.")
 

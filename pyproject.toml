@@ -17,7 +17,8 @@ dependencies = [
     "typer",
     "duckdb>=0.7",
     "python-dateutil",
-    "prefect==2.8.7"
+    "prefect==2.8.7",
+    "prefect-gcp"
 ]
 
 [project.optional-dependencies]

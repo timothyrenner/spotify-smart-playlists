@@ -69,8 +69,33 @@ fastapi==0.95.0
     # via prefect
 fsspec==2023.4.0
     # via prefect
+google-api-core==2.11.0
+    # via
+    #   google-api-python-client
+    #   google-cloud-core
+    #   google-cloud-storage
+google-api-python-client==2.85.0
+    # via prefect-gcp
 google-auth==2.17.2
-    # via kubernetes
+    # via
+    #   google-api-core
+    #   google-api-python-client
+    #   google-auth-httplib2
+    #   google-cloud-core
+    #   google-cloud-storage
+    #   kubernetes
+google-auth-httplib2==0.1.0
+    # via google-api-python-client
+google-cloud-core==2.3.2
+    # via google-cloud-storage
+google-cloud-storage==2.8.0
+    # via prefect-gcp
+google-crc32c==1.5.0
+    # via google-resumable-media
+google-resumable-media==2.4.1
+    # via google-cloud-storage
+googleapis-common-protos==1.59.0
+    # via google-api-core
 greenlet==2.0.2
     # via sqlalchemy
 griffe==0.26.0
@@ -85,6 +110,10 @@ hpack==4.0.0
     # via h2
 httpcore==0.16.3
     # via httpx
+httplib2==0.22.0
+    # via
+    #   google-api-python-client
+    #   google-auth-httplib2
 httpx[http2]==0.23.3
     # via prefect
 hyperframe==6.0.1
@@ -148,7 +177,15 @@ platformdirs==3.2.0
 polars[pyarrow]==0.17.0
     # via spotify-smart-playlists (pyproject.toml)
 prefect==2.8.7
+    # via
+    #   prefect-gcp
+    #   spotify-smart-playlists (pyproject.toml)
+prefect-gcp==0.4.0
     # via spotify-smart-playlists (pyproject.toml)
+protobuf==4.22.3
+    # via
+    #   google-api-core
+    #   googleapis-common-protos
 pyarrow==11.0.0
     # via polars
 pyasn1==0.4.8
@@ -167,6 +204,8 @@ pygments==2.14.0
     # via rich
 pynacl==1.5.0
     # via spotify-smart-playlists (pyproject.toml)
+pyparsing==3.0.9
+    # via httplib2
 pyrsistent==0.19.3
     # via jsonschema
 python-dateutil==2.8.2
@@ -204,6 +243,8 @@ requests==2.28.2
     # via
     #   apprise
     #   docker
+    #   google-api-core
+    #   google-cloud-storage
     #   kubernetes
     #   requests-oauthlib
     #   spotipy
@@ -222,6 +263,7 @@ ruff==0.0.261
 six==1.16.0
     # via
     #   google-auth
+    #   google-auth-httplib2
     #   kubernetes
     #   python-dateutil
     #   spotipy
@@ -259,6 +301,8 @@ tzdata==2023.3
     # via pytz-deprecation-shim
 tzlocal==4.3
     # via dateparser
+uritemplate==4.1.1
+    # via google-api-python-client
 urllib3==1.26.15
     # via
     #   docker
