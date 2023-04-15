@@ -98,6 +98,7 @@ def update_artists(
         )
     else:
         logger.info("No new artists to pull.")
+    database.close()
 
 
 if __name__ == "__main__":

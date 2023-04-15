@@ -79,16 +79,20 @@ def update_track_audio_features(
         database, track_audio_features_exists
     )
 
-    track_audio_features = pull_audio_features_task(
-        spotify, track_ids_without_audio_features
-    )
+    if track_ids_without_audio_features:
+        track_audio_features = pull_audio_features_task(
+            spotify, track_ids_without_audio_features
+        )
 
-    save_to_database(
-        database=database,
-        table="track_audio_features",
-        data_frame=track_audio_features,
-        create_or_replace=(not track_audio_features_exists),
-    )
+        save_to_database(
+            database=database,
+            table="track_audio_features",
+            data_frame=track_audio_features,
+            create_or_replace=(not track_audio_features_exists),
+        )
+    else:
+        logger.info("No new track audio features.")
+    database.close()
 
 
 if __name__ == "__main__":

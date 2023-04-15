@@ -44,12 +44,12 @@ def main():
 
     logger.info("Configuring storage block.")
     gcs = GCS(
-        bucket_path="trenner-datasets/spotify",
+        bucket_path="trenner-datasets/spotify-pipeline",
         service_account_info=json.dumps(
             gcp_credentials.service_account_info.dict()
         ),
     )
-    gcs.save(name="spotify-smart-playlists-storage")
+    gcs.save(name="spotify-smart-playlists-storage", overwrite=True)
 
     logger.info("All blocks configured.")
 

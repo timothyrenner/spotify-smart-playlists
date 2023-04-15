@@ -63,6 +63,7 @@ def build_root_playlists(
         data_frame=root_playlists_frame,
         create_or_replace=True,
     )
+    database.close()
 
 
 if __name__ == "__main__":

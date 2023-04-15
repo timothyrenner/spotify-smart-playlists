@@ -63,6 +63,7 @@ def update_recent_tracks(
     latest_played_at: datetime | None = None
     if play_history_exists:
         latest_played_at = get_latest_played_at_task(database)
+        logger.info(f"Latest played_at: {latest_played_at}.")
 
     recent_tracks = pull_recent_tracks_task(spotify, latest_played_at)
 
@@ -76,6 +77,7 @@ def update_recent_tracks(
         )
     else:
         logger.info("No new tracks to save. All done.")
+    database.close()
 
 
 if __name__ == "__main__":

@@ -61,6 +61,7 @@ def pull_library(
         create_or_replace=True,
     )
 
+    database.close()
     logger.info("Done updating library.")
 
 

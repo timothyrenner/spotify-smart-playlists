@@ -143,6 +143,7 @@ def load_smart_playlists(
             )
         load_playlist_to_spotify_task(spotify, playlist_id, tracks)
         logger.info(f"Loaded new tracks for {root_playlist_name}.")
+    database.close()
 
 
 if __name__ == "__main__":
