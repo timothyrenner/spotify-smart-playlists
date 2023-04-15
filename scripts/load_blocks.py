@@ -48,13 +48,24 @@ def main():
     gcp_credentials = GcpCredentials.load("prefect-gcs-rw")
 
     logger.info("Configuring storage block.")
-    gcs = GCS(
-        bucket_path="trenner-datasets/spotify-pipeline",
+    gcs_recent_tracks = GCS(
+        bucket_path="trenner-datasets/spotify-pipeline/recent-tracks",
         service_account_info=json.dumps(
             gcp_credentials.service_account_info.dict()
         ),
     )
-    gcs.save(name="spotify-smart-playlists-storage", overwrite=True)
+    gcs_recent_tracks.save(
+        name="spotify-recent-tracks-storage", overwrite=True
+    )
+    gcs_smart_playlists = GCS(
+        bucket_path="trenner-datasets/spotify-pipeline/smart-playlists",
+        service_account_info=json.dumps(
+            gcp_credentials.service_account_info.dict()
+        ),
+    )
+    gcs_smart_playlists.save(
+        name="spotify-smart-playlists-storage", overwrite=True
+    )
 
     logger.info("All blocks configured.")
 
