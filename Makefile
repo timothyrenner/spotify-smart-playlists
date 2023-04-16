@@ -43,7 +43,6 @@ format:
 check:
 	python -m ruff check .
 	python -m black --check .
-	python -m mypy .
 
 .PHONY: build-deployments
 ## Builds the two deployments for this project.

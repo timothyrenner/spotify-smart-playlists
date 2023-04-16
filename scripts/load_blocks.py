@@ -1,13 +1,10 @@
 import typer
 from dotenv import load_dotenv, find_dotenv
 from loguru import logger
-import json
 from prefect.infrastructure.process import Process
 from prefect.blocks.system import Secret
 from prefect.filesystems import GCS
-from pydantic import SecretStr
 
-from prefect_gcp import GcpCredentials
 import os
 from spotify_smart_playlists.helpers import (
     get_spotify_credentials_from_environment,
