@@ -63,6 +63,17 @@ build-deployments:
 		--work-queue default \
 		--infra-block process/spotify-local \
 		--storage-block gcs/spotify-recent-tracks-storage
+
+.PHONY: apply-deployments
+## Applies the two deployments for this project.
+apply-deployments:
+	prefect deployment apply pipeline/update_recent_tracks-deployment.yaml
+	prefect deployment apply pipeline/update_smart_playlists-deployment.yaml
+
+.PHONY: pull-database
+## Pulls database for testing.
+pull-database:
+	gsutil cp gs://trenner-datasets/spotify/spotify.db pipeline/spotify.db
 #################################################################################
 # Self Documenting Commands                                                     #
 #################################################################################
