@@ -14,28 +14,47 @@ This project is broken into several steps cause I wanted to start simple and get
 
 ## Setup
 
-Obviously this is just for me but if you're forking this or something these are the actual things you need to do, but you might want to change the repo secret names.
-Just be sure to update the workflows that use them (`.github/workflows`).
+Make the environment.
 
-Credentials for Spotify are stored in the database itself, encrypted.
-Generate a Fernet key and save it as `SPOTIFY_CACHE_FERNET_KEY` in your `.env` file and as a GH secret.
+```
+conda env create -f environment.yaml
+make install-dev
+```
 
-In order to access Spotify's API, you'll need a client / secret ID.
-Hit up the Spotify developer dashboard to create an app and get one.
-You also need to set up a redirect URI (see [this article](https://spotipy.readthedocs.io/en/2.17.1/#authorization-code-flow)) - this requires the authorization flow.
-Store those as `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REDIRECT_URI` in repository secrets.
+Helper functions are in the `spotify_smart_playlists` module, pipelines for gluing everything together are in `pipelines/`.
 
-In order to use Google Cloud as a DVC remote, you need a service account with "Object Admin" permissions on the bucket for your DVC remote.
-Download those keys and store them as a repo secret as `MUSIC_DVC_PUSHER_SA_CREDS`.
-You'll also need the project id as a secret, `PERSONAL_PROJECT_ID`.
+I've switched this project from using DVC pipelines / github actions to a self hosted [Prefect](https://www.prefect.io/) deployment.
+Prefect ain't perfect but it's a better fit for this than DVC pipelines were.
+You don't need a Prefect deployment to run the code though, which is something I like about it.
 
-The last thing you need to do is run the scripts locally at least once, so that you can perform the authorization flow and grant the app the Spotify scopes it needs.
-Actions can't do this for you because the browser needs to open.
+In order to run it, you do need a `.env` file in the project root with the following four entries:
+
+```
+SPOTIFY_CLIENT_ID="xxxxxxx"
+SPOTIFY_CLIENT_SECRET="xxxxxxxx"
+SPOTIFY_REDIRECT_URI="xxxxxxxx"
+SPOTIFY_CACHE_FERNET_KEY="xxxxxxxx"
+```
+
+Those first three come right from [spotipy](https://spotipy.readthedocs.io/en/2.22.1/), the last one is how I encrypt the credentials in the database.
+You'll need to generate that manually via pynacl and obvs ... not share that.
+
+I also personally have a variable pointing to a GCS service account, because my deployment is coupled to GCP.
+
+```
+PREFECT_GCS_RW_PATH="xxxxxxx"
+```
+
+That's only used by two pipelines - the ones I actually deploy - `pipeline/update_recent_tracks_docker.py` and `pipeline/update_smart_playlists_docker.py`.
+I'm not actually using Docker because I can't get that to work yet, but eventually that's what will happen.
+
+
+The `pipeline/load_smart_playlists.py` pipeline runs everything, end to end, locally.
+I also deploy `pipelnie/update_recent_tracks.py` (but the "docker" version) separately because it runs more frequently, since Spotify only saves 50 recent tracks to pull.
 
 ## Hands free autorotating playlists
 
-This one's a lot cooler, but it's also a lot more complicated.
-Define playlists as yaml files in `playlists`.
+Define playlists as yaml files in `pipeline/playlists`.
 Here's a complete schema.
 
 ```yaml
@@ -66,7 +85,7 @@ genres, artists, and additional_tracks are all pretty self explanatory.
 audio_features are features of the actual songs themselves, and there are a lot of them.
 [Spotify](https://developer.spotify.com/documentation/web-api/reference/#objects-index) - look under "Audio Features Object" - has detailed what they are and what they mean in their API documentation.
 
-Once those playlists are defined, add them to `params.yaml`, and the pipeline will pick them up and build playlists out of them.
+Save those to `pipeline/playlists` - the Prefect pipeline will make the playlists.
 It removes any tracks played in the last week and salts the playlists with recommendations too.
 Just like the tracks you like and they'll make their way into these playlists, hands free.
 Hence the name 😄.
@@ -75,17 +94,6 @@ What the pipeline does is finds all tracks in the library that matches the crite
 This enables me to inspect the playlists (they're tables in the database) to debug.
 When it's time to push a playlist to Spotify, the pipeline will remove tracks from the root that were recently played, downsample to about 20, throw in some recommended tracks based on that sample, and push it to Spotify.
 It does not save that playlist in the DB but I am considering adding that if I have to do any more debugging.
-
-## Running the pipeline
-
-There are three stages to the pipeline.
-Originally this was a DVC pipeline but since I switched to using DuckDB instead of CSV files (good move, for the record) I didn't need something as heavy as a DVC pipeline and switched workflow coordination to make.
-
-```
-make recent_tracks # Pulls recently played tracks.
-make library # Pulls library, updates artist, genre, audio feature tables, and root playlists.
-make load_playlists # Creates smaller playlists from the root playlists and pushes them to Spotify.
-```
 
 ## Machine learned auto rotating playlists
 
