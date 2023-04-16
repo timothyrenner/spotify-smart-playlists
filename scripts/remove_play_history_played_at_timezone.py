@@ -10,7 +10,7 @@ def main(database_file: str = "spotify.db"):
     CREATE OR REPLACE TABLE play_history_tz_corrected AS
     SELECT 
         track_id,
-        (play_history AT TIME ZONE 'UTC')::TIMESTAMP AS play_history
+        (played_at AT TIME ZONE 'UTC')::TIMESTAMP AS played_at
     FROM play_history
     """
     )
