@@ -1,9 +1,9 @@
 ###
-### A complete description of a Prefect Deployment for flow 'Update smart playlists'
+### A complete description of a Prefect Deployment for flow 'Update smart playlists (Docker)'
 ###
 name: update-smart-playlists
 description: null
-version: 5ff82c832e28e91cd2bcf132662faeac
+version: be9222cc4e8c7db62eac098e2e3dc452
 # The work queue that will handle this deployment's runs
 work_queue_name: default
 work_pool_name: spotify-agent-pool
@@ -16,7 +16,7 @@ infra_overrides: {}
 ###
 ### DO NOT EDIT BELOW THIS LINE
 ###
-flow_name: Update smart playlists
+flow_name: Update smart playlists (Docker)
 manifest_path: null
 infrastructure:
   type: process
@@ -41,7 +41,7 @@ storage:
   block_type_slug: gcs
   _block_type_slug: gcs
 path: ''
-entrypoint: update_smart_playlists:update_smart_playlists
+entrypoint: update_smart_playlists_docker:main
 parameter_openapi_schema:
   title: Parameters
   type: object
@@ -56,23 +56,6 @@ parameter_openapi_schema:
       default: playlists
       position: 1
       type: string
-      format: path
-    cache_fernet_key:
-      title: cache_fernet_key
-      position: 2
-      type: string
-    client_id:
-      title: client_id
-      position: 3
-      type: string
-    client_secret:
-      title: client_secret
-      position: 4
-      type: string
-    redirect_uri:
-      title: redirect_uri
-      position: 5
-      type: string
   required: null
   definitions: null
-timestamp: '2023-04-16T14:06:23.703149+00:00'
+timestamp: '2023-04-16T14:28:21.305959+00:00'

@@ -41,3 +41,5 @@ dask-worker-space/
 .hg/
 
 spotify.db
+update-recent-tracks-deployment.yaml
+update-smart-playlists-deployment.yaml

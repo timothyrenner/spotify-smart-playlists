@@ -1,9 +1,9 @@
 ###
-### A complete description of a Prefect Deployment for flow 'Pull recent tracks'
+### A complete description of a Prefect Deployment for flow 'Update recent tracks (Docker)'
 ###
 name: update-recent-tracks
 description: null
-version: 4f9422f307d44901e13ec9fe4bef1187
+version: cf96204a607c7ea615228652bcd8cd80
 # The work queue that will handle this deployment's runs
 work_queue_name: default
 work_pool_name: spotify-agent-pool
@@ -16,7 +16,7 @@ infra_overrides: {}
 ###
 ### DO NOT EDIT BELOW THIS LINE
 ###
-flow_name: Pull recent tracks
+flow_name: Update recent tracks (Docker)
 manifest_path: null
 infrastructure:
   type: process
@@ -41,7 +41,7 @@ storage:
   block_type_slug: gcs
   _block_type_slug: gcs
 path: ''
-entrypoint: update_recent_tracks:update_recent_tracks
+entrypoint: update_recent_tracks_docker:main
 parameter_openapi_schema:
   title: Parameters
   type: object
@@ -51,22 +51,11 @@ parameter_openapi_schema:
       default: spotify.db
       position: 0
       type: string
-    cache_fernet_key:
-      title: cache_fernet_key
+    playlist_config_dir:
+      title: playlist_config_dir
+      default: playlists
       position: 1
-      type: string
-    client_id:
-      title: client_id
-      position: 2
-      type: string
-    client_secret:
-      title: client_secret
-      position: 3
-      type: string
-    redirect_uri:
-      title: redirect_uri
-      position: 4
       type: string
   required: null
   definitions: null
-timestamp: '2023-04-16T14:06:31.073756+00:00'
+timestamp: '2023-04-16T14:28:26.290865+00:00'

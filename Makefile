@@ -50,15 +50,17 @@ check:
 build-deployments:
 	cd pipeline && \
 	prefect deployment build \
-		update_smart_playlists:update_smart_playlists \
+		update_smart_playlists_docker:main \
 		--name update-smart-playlists \
+		--output update-smart-playlists-deployment.yaml \
 		--pool spotify-agent-pool \
 		--work-queue default \
 		--infra-block process/spotify-local \
 		--storage-block gcs/spotify-smart-playlists-storage && \
 	prefect deployment build \
-		update_recent_tracks:update_recent_tracks \
+		update_recent_tracks_docker:main \
 		--name update-recent-tracks \
+		--output update-recent-tracks-deployment.yaml \
 		--pool spotify-agent-pool \
 		--work-queue default \
 		--infra-block process/spotify-local \
@@ -67,8 +69,8 @@ build-deployments:
 .PHONY: apply-deployments
 ## Applies the two deployments for this project.
 apply-deployments:
-	prefect deployment apply pipeline/update_recent_tracks-deployment.yaml
-	prefect deployment apply pipeline/update_smart_playlists-deployment.yaml
+	prefect deployment apply pipeline/update-recent-tracks-deployment.yaml
+	prefect deployment apply pipeline/update-smart-playlists-deployment.yaml
 
 .PHONY: pull-database
 ## Pulls database for testing.
