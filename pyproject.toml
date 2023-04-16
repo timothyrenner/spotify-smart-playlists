@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.1.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spotify-smart-playlists"
+version = "1.0.0"
+requires-python = ">=3.11"
+dependencies = [
+    "python-dotenv",
+    "spotipy",
+    "loguru",
+    "pynacl",
+    "toolz",
+    "omegaconf",
+    "polars[pyarrow]",
+    "typer",
+    "duckdb>=0.7",
+    "python-dateutil",
+    "prefect==2.8.7",
+    "prefect-gcp[cloud_storage]",
+    "gcsfs!=2023.3.0"
+]
+
+[project.optional-dependencies]
+dev = ["black", "ruff", "mypy"]
+
+[tool.setuptools]
+packages = ["spotify_smart_playlists"]
+
+[tool.black]
+line-length=79

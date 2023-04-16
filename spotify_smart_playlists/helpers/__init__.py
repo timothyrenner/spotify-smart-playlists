@@ -1,9 +1,13 @@
-from .github_file_cache_handler import CacheFileGithubHandler
 from .duckdb_encrypted_cache_handler import DuckDBEncryptedCacheHandler
-from .auth import spotify_auth
+from .auth import (
+    spotify_auth,
+    SpotifyCredentials,
+    get_spotify_credentials_from_environment,
+)
 
 __all__ = [
-    "CacheFileGithubHandler",
     "DuckDBEncryptedCacheHandler",
     "spotify_auth",
+    "SpotifyCredentials",
+    "get_spotify_credentials_from_environment",
 ]

@@ -13,10 +13,22 @@ load_dotenv(find_dotenv())
 SPOTIFY_CACHE_FERNET_KEY = os.getenv("SPOTIFY_CACHE_FERNET_KEY")
 
 
+def get_cache_fernet_key_from_environment() -> str:
+    load_dotenv(find_dotenv())
+    cache_fernet_key = os.getenv("SPOTIFY_CACHE_FERNET_KEY")
+    if cache_fernet_key is None:
+        raise ValueError(
+            "Unable to find SPOTIFY_CACHE_FERNET_KEY in env or .env"
+        )
+    return cache_fernet_key
+
+
 class DuckDBEncryptedCacheHandler(CacheHandler):
-    def __init__(self, database: str):
+    def __init__(self, database: str, cache_fernet_key: str | None = None):
         self.database = database
-        self.fernet = Fernet(SPOTIFY_CACHE_FERNET_KEY.encode("utf-8"))
+        if cache_fernet_key is None:
+            cache_fernet_key = get_cache_fernet_key_from_environment()
+        self.fernet = Fernet(cache_fernet_key.encode("utf-8"))
         # Create the table if it doesn't exist.
         conn = duckdb.connect(self.database)
         try:
