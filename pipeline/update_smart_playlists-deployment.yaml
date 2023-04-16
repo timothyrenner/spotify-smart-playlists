@@ -1,0 +1,78 @@
+###
+### A complete description of a Prefect Deployment for flow 'Update smart playlists'
+###
+name: update-smart-playlists
+description: null
+version: 5ff82c832e28e91cd2bcf132662faeac
+# The work queue that will handle this deployment's runs
+work_queue_name: default
+work_pool_name: spotify-agent-pool
+tags: []
+parameters: {}
+schedule: null
+is_schedule_active: null
+infra_overrides: {}
+
+###
+### DO NOT EDIT BELOW THIS LINE
+###
+flow_name: Update smart playlists
+manifest_path: null
+infrastructure:
+  type: process
+  env: {}
+  labels: {}
+  name: null
+  command: null
+  stream_output: true
+  working_dir: null
+  _block_document_id: 72d50e7d-f601-4bb4-b000-fc4c601f8377
+  _block_document_name: spotify-local
+  _is_anonymous: false
+  block_type_slug: process
+  _block_type_slug: process
+storage:
+  bucket_path: trenner-datasets/spotify-pipeline/smart-playlists
+  service_account_info: '**********'
+  project: null
+  _block_document_id: 6fd9b609-c077-4655-ab53-2cdf3f6475c6
+  _block_document_name: spotify-smart-playlists-storage
+  _is_anonymous: false
+  block_type_slug: gcs
+  _block_type_slug: gcs
+path: ''
+entrypoint: update_smart_playlists:update_smart_playlists
+parameter_openapi_schema:
+  title: Parameters
+  type: object
+  properties:
+    database_file:
+      title: database_file
+      default: spotify.db
+      position: 0
+      type: string
+    playlist_config_dir:
+      title: playlist_config_dir
+      default: playlists
+      position: 1
+      type: string
+      format: path
+    cache_fernet_key:
+      title: cache_fernet_key
+      position: 2
+      type: string
+    client_id:
+      title: client_id
+      position: 3
+      type: string
+    client_secret:
+      title: client_secret
+      position: 4
+      type: string
+    redirect_uri:
+      title: redirect_uri
+      position: 5
+      type: string
+  required: null
+  definitions: null
+timestamp: '2023-04-16T14:06:23.703149+00:00'

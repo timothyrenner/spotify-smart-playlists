@@ -1,21 +1,3 @@
-DB = spotify.db
-.PHONY: library
-library:
-	python scripts/hands-free/pull_library.py $(DB)
-	python scripts/hands-free/pull_artists.py $(DB)
-	python scripts/hands-free/pull_audio_features.py $(DB)
-	@$(foreach file, $(wildcard playlists/*.yaml), python scripts/hands-free/make_root_playlist.py $(DB) $(file);)
-
-.PHONY: recent_tracks
-recent_tracks:
-	python scripts/hands-free/pull_recent_tracks.py $(DB)
-
-.PHONY: load_playlists
-load_playlists: 
-	@$(foreach file, $(wildcard playlists/*.yaml), python scripts/hands-free/load_playlist.py $(DB) $(file);)
-
-####### NEWER COMMANDS HERE #######
-
 .PHONY: env
 ## Install for deployment.
 install: env
@@ -63,6 +45,24 @@ check:
 	python -m black --check .
 	python -m mypy .
 
+.PHONY: build-deployments
+## Builds the two deployments for this project.
+build-deployments:
+	cd pipeline && \
+	prefect deployment build \
+		update_smart_playlists:update_smart_playlists \
+		--name update-smart-playlists \
+		--pool spotify-agent-pool \
+		--work-queue default \
+		--infra-block process/spotify-local \
+		--storage-block gcs/spotify-smart-playlists-storage && \
+	prefect deployment build \
+		update_recent_tracks:update_recent_tracks \
+		--name update-recent-tracks \
+		--pool spotify-agent-pool \
+		--work-queue default \
+		--infra-block process/spotify-local \
+		--storage-block gcs/spotify-recent-tracks-storage
 #################################################################################
 # Self Documenting Commands                                                     #
 #################################################################################
