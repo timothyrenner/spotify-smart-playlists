@@ -22,6 +22,9 @@ def save_to_database(
     logger.info(
         f"Saving {data_frame.shape[0]} rows to the database in {table}."
     )
+    if data_frame.is_empty():
+        logger.warning("Data frame is empty, skipping DB operation.")
+        return
     if create_or_replace:
         database.execute(
             f"CREATE OR REPLACE TABLE {table} AS SELECT * FROM data_frame"
