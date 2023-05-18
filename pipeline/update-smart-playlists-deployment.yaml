@@ -9,8 +9,11 @@ work_queue_name: default
 work_pool_name: spotify-agent-pool
 tags: []
 parameters: {}
-schedule: null
-is_schedule_active: null
+schedule:
+  interval: 86400.0
+  anchor_date: '2023-04-16T11:00:00+00:00'
+  timezone: America/Chicago
+is_schedule_active: true
 infra_overrides: {}
 
 ###
@@ -58,4 +61,4 @@ parameter_openapi_schema:
       type: string
   required: null
   definitions: null
-timestamp: '2023-04-16T14:28:21.305959+00:00'
+timestamp: '2023-05-02T12:13:37.902668+00:00'
