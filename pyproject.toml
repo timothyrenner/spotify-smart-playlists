@@ -17,8 +17,9 @@ dependencies = [
     "typer",
     "duckdb>=0.7",
     "python-dateutil",
-    "prefect~=2.10",
+    "prefect==2.10.11",
     "prefect-gcp[cloud_storage]",
+    "prefect-shell",
     "gcsfs!=2023.3.0"
 ]
 

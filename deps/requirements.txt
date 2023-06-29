@@ -193,11 +193,14 @@ pendulum==2.1.2
     # via prefect
 polars[pyarrow]==0.17.0
     # via spotify-smart-playlists (pyproject.toml)
-prefect==2.8.7
+prefect==2.10.11
     # via
     #   prefect-gcp
+    #   prefect-shell
     #   spotify-smart-playlists (pyproject.toml)
 prefect-gcp[cloud_storage]==0.4.0
+    # via spotify-smart-playlists (pyproject.toml)
+prefect-shell==0.1.5
     # via spotify-smart-playlists (pyproject.toml)
 protobuf==4.22.3
     # via
