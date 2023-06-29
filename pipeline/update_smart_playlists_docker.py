@@ -2,12 +2,24 @@ import typer
 from prefect.blocks.system import Secret
 from prefect_gcp import GcpCredentials, GcsBucket
 from update_smart_playlists import update_smart_playlists
-from prefect import flow, get_run_logger
+from prefect import flow, get_run_logger, task
+from pathlib import Path
+from prefect_shell import ShellOperation
+from prefect.blocks.system import String
+
+
+@task(name="Copy data to local datasets directory")
+def copy_data_to_local_datasets(data_dir: Path, persistent_data_dir: Path):
+    logger = get_run_logger()
+    logger.info(f"Saving contents of {data_dir} to {persistent_data_dir}.")
+    ShellOperation(commands=[f"cp -R {data_dir} {persistent_data_dir}"]).run()
 
 
 @flow(name="Update smart playlists (Docker)")
 def main(
-    database_file: str = "spotify.db", playlist_config_dir: str = "playlists"
+    database_file: str = "spotify.db",
+    playlist_config_dir: str = "playlists",
+    exported_data_dir: Path = Path("exported_data"),
 ):
     logger = get_run_logger()
 
@@ -40,6 +52,7 @@ def main(
     update_smart_playlists(
         database_file=database_file,
         playlist_config_dir=playlist_config_dir,
+        exported_data_dir=exported_data_dir,
         cache_fernet_key=cache_fernet_key,
         client_id=client_id,
         client_secret=client_secret,
@@ -48,6 +61,10 @@ def main(
 
     logger.info("Uploading database to GCS.")
     spotify_bucket.upload_from_path(database_file, "spotify/spotify.db")
+
+    logger.info("Fetching local persistent data dir.")
+    persistent_data_dir = String.load("spotify-persistent-data-dir").value
+    copy_data_to_local_datasets(exported_data_dir, persistent_data_dir)
     logger.info("All done.")
 
 

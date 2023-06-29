@@ -3,7 +3,7 @@
 ###
 name: update-smart-playlists
 description: null
-version: be9222cc4e8c7db62eac098e2e3dc452
+version: b12c1c763b8c0cd576907882abe8e5ee
 # The work queue that will handle this deployment's runs
 work_queue_name: default
 work_pool_name: spotify-agent-pool
@@ -59,6 +59,12 @@ parameter_openapi_schema:
       default: playlists
       position: 1
       type: string
+    exported_data_dir:
+      title: exported_data_dir
+      default: exported_data
+      position: 2
+      type: string
+      format: path
   required: null
   definitions: null
-timestamp: '2023-05-02T12:13:37.902668+00:00'
+timestamp: '2023-06-29T23:38:18.225635+00:00'

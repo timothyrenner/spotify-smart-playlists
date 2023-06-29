@@ -2,7 +2,7 @@ import typer
 from dotenv import load_dotenv, find_dotenv
 from loguru import logger
 from prefect.infrastructure.process import Process
-from prefect.blocks.system import Secret
+from prefect.blocks.system import Secret, String
 from prefect.filesystems import GCS
 
 import os
@@ -24,6 +24,16 @@ def main():
     gcp_credentials_location = os.getenv("PREFECT_GCS_RW_PATH")
     if gcp_credentials_location is None:
         raise ValueError("PREFECT_GCS_RW_PATH not in environment or .env")
+
+    persistent_data_dir = os.getenv("PERSISTENT_DATA_DIR")
+    if persistent_data_dir is None:
+        raise ValueError("PERSISTENT_DATA_DIR not in environment or .env")
+
+    logger.info("Creating a block for the local persistent directory.")
+    persistent_data_dir_block = String(value=persistent_data_dir)
+    persistent_data_dir_block.save(
+        name="spotify-persistent-data-dir", overwrite=True
+    )
 
     logger.info("Creating block for the cache fernet key.")
     cache_fernet_key_secret = Secret(value=cache_fernet_key)
