@@ -1,0 +1,72 @@
+source: artist_genres is table(
+    'duckdb:~/datasets/spotify/exported_data/artist_genres.parquet'
+) {
+    measure: num_artists is count()
+    
+    query: artists_by_genre is {
+        group_by: genre
+        aggregate: num_artists
+    }
+}
+
+source: track_audio_features is table(
+    'duckdb:~/datasets/spotify/exported_data/track_audio_features.parquet'
+) {
+    primary_key: track_id
+    
+    measure: avg_danceability is avg(danceability)
+    measure: avg_energy is avg(energy)
+    measure: avg_loudness is avg(loudness)
+    measure: avg_speechiness is avg(speechiness)
+    measure: avg_acousticness is avg(acousticness)
+    measure: avg_instrumentalness is avg(instrumentalness)
+    measure: avg_liveness is avg(liveness)
+    measure: avg_valence is avg(valence)
+    measure: avg_tempo is avg(tempo)
+    measure: avg_duration is avg(duration_ms)
+}
+
+source: artists is table(
+    'duckdb:~/datasets/spotify/exported_data/artists.parquet'
+) {
+    primary_key: id
+    join_many: artist_genres on id = artist_genres.artist_id
+}
+
+source: track_artists is table(
+    'duckdb:~/datasets/spotify/exported_data/track_artists.parquet'
+) {
+    join_one: artists on artist_id = artists.id
+}
+
+source: library_tracks is table(
+    'duckdb:~/datasets/spotify/exported_data/library_tracks.parquet'
+) {
+    primary_key: track_id
+    join_many: track_artists on track_id = track_artists.track_id
+    join_one: track_audio_features on track_id = track_audio_features.track_id
+    measure: num_tracks is count()
+    measure: num_distinct_tracks is count(distinct track_id)
+}
+
+query: artist_explorer_dashboard is library_tracks -> {
+    group_by: artist_name is track_artists.artists.name
+    aggregate: 
+        num_distinct_tracks
+        track_audio_features.avg_danceability
+        track_audio_features.avg_energy
+        track_audio_features.avg_loudness
+        track_audio_features.avg_speechiness
+        track_audio_features.avg_acousticness
+        track_audio_features.avg_instrumentalness
+        track_audio_features.avg_liveness
+        track_audio_features.avg_valence
+        track_audio_features.avg_tempo
+        track_audio_features.avg_duration
+    where:
+        track_artists.artists.name 
+            = 'W O L F C L U B' | 
+                'Carpenter Brut' | 
+                'Cluster Buster' | 
+                'Street Cleaner'
+}
