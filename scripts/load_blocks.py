@@ -3,7 +3,6 @@ from dotenv import load_dotenv, find_dotenv
 from loguru import logger
 from prefect.infrastructure.process import Process
 from prefect.blocks.system import Secret, String
-from prefect.filesystems import GCS
 
 import os
 from spotify_smart_playlists.helpers import (
@@ -20,10 +19,6 @@ def main():
         raise ValueError("SPOTIFY_CACHE_FERNET_KEY not in environment or .env")
 
     spotify_credentials = get_spotify_credentials_from_environment()
-
-    gcp_credentials_location = os.getenv("PREFECT_GCS_RW_PATH")
-    if gcp_credentials_location is None:
-        raise ValueError("PREFECT_GCS_RW_PATH not in environment or .env")
 
     persistent_data_dir = os.getenv("PERSISTENT_DATA_DIR")
     if persistent_data_dir is None:
@@ -56,33 +51,6 @@ def main():
     logger.info("Creating infrastructure block for local processes.")
     local_process_infrastructure = Process()
     local_process_infrastructure.save(name="spotify-local", overwrite=True)
-
-    # This is really annoying. I can't use the GcpCredentials block the way
-    # I want to because the json ser / deser puts in extra new lines. I have
-    # to literally copy/paste it but obviously that's dumb and I want to
-    # automate this. So I'm gonna slurp the credentials file.
-    logger.info("Getting service account creds.")
-    with open(gcp_credentials_location, "r") as f:
-        gcp_credentials = f.read()
-
-    logger.info("Configuring storage block.")
-    gcs_recent_tracks = GCS(
-        bucket_path="trenner-datasets/spotify-pipeline/recent-tracks",
-        service_account_info=gcp_credentials,
-    )
-    gcs_recent_tracks.save(
-        name="spotify-recent-tracks-storage", overwrite=True
-    )
-    gcs_smart_playlists = GCS(
-        bucket_path="trenner-datasets/spotify-pipeline/smart-playlists",
-        service_account_info=gcp_credentials,
-    )
-
-    gcs_smart_playlists.save(
-        name="spotify-smart-playlists-storage", overwrite=True
-    )
-
-    logger.info("All blocks configured.")
 
 
 if __name__ == "__main__":

@@ -44,9 +44,9 @@ check:
 	python -m ruff check .
 	python -m black --check .
 
-.PHONY: build-deployments
-## Builds the two deployments for this project.
-build-deployments:
+.PHONY: deploy
+## Deploys the pipelines for the project.
+deploy:
 	cd pipeline && \
 	prefect deployment build \
 		update_smart_playlists_docker:main \
@@ -55,7 +55,9 @@ build-deployments:
 		--pool spotify-agent-pool \
 		--work-queue default \
 		--infra-block process/spotify-local \
-		--storage-block gcs/spotify-smart-playlists-storage && \
+		--storage-block remote-file-system/minio-local-pipeline-storage/spotify-update-smart-playlists \
+		--apply && \
+	sleep 1 && \
 	prefect deployment build \
 		update_recent_tracks_docker:main \
 		--name update-recent-tracks \
@@ -63,13 +65,9 @@ build-deployments:
 		--pool spotify-agent-pool \
 		--work-queue default \
 		--infra-block process/spotify-local \
-		--storage-block gcs/spotify-recent-tracks-storage
+		--storage-block remote-file-system/minio-local-pipeline-storage/spotify-update-recent-tracks \
+		--apply
 
-.PHONY: apply-deployments
-## Applies the two deployments for this project.
-apply-deployments:
-	prefect deployment apply pipeline/update-recent-tracks-deployment.yaml
-	prefect deployment apply pipeline/update-smart-playlists-deployment.yaml
 
 .PHONY: pull-database
 ## Pulls database for testing.

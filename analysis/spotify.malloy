@@ -70,3 +70,32 @@ query: artist_explorer_dashboard is library_tracks -> {
                 'Cluster Buster' | 
                 'Street Cleaner'
 }
+
+query: root_playlist_builder is library_tracks -> {
+    project: 
+        track_id,
+        track_name,
+        track_artists.artists.name,
+        track_artists.artists.artist_genres.genre,
+        track_audio_features.loudness,
+        track_audio_features.acousticness
+    where:
+        track_artists.artists.artist_genres.genre
+            = 'industrial metal' |
+                'future rock' |
+                // 'nightrun' |
+                'cyber metal' |
+                'darksynth',
+        // track_artists.artists.name
+        //     = 'Imagine Dragons' |
+        //         'STARSET' |
+        //         'Rabbit Junk' |
+        //         'Scandroid' |
+        //         'Essenger' |
+        //         'Neurotech' |
+        //         'Vincenzo Salvia' |
+        //         'Nightcrawler' |
+        //         'MNQN' |
+        //         'Primo' |
+        //         'NUTRONIC'
+}

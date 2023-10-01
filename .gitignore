@@ -133,3 +133,5 @@ dmypy.json
 notebooks/
 *.db
 .vscode
+pipeline/update-smart-playlists-deployment.yaml
+pipeline/update-recent-tracks-deployment.yaml

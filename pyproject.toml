@@ -20,7 +20,8 @@ dependencies = [
     "prefect==2.10.11",
     "prefect-gcp[cloud_storage]",
     "prefect-shell",
-    "gcsfs!=2023.3.0"
+    "s3fs",
+    "gcsfs>2023.9.0"
 ]
 
 [project.optional-dependencies]
