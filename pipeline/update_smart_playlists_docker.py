@@ -9,7 +9,7 @@ from prefect.filesystems import RemoteFileSystem
 
 @flow(name="Update smart playlists (Docker)")
 def main(
-    data_dir: Path = "data",
+    data_dir: Path = Path("data"),
     playlist_config_dir: str = "playlists",
 ):
     logger = get_run_logger()

@@ -8,9 +8,7 @@ from pathlib import Path
 
 
 @flow(name="Update recent tracks (Docker)")
-def main(
-    data_dir: Path = Path("data"), playlist_config_dir: str = "playlists"
-):
+def main(data_dir: Path = Path("data")):
     logger = get_run_logger()
 
     logger.info("Fetching cache fernet key.")
