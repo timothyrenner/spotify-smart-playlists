@@ -29,11 +29,13 @@ def get_root_playlist_names_task(database: DuckDBPyConnection) -> List[str]:
 
 @task(name="Get tracks for playlist")
 def get_tracks_for_playlist_task(
-    database: DuckDBPyConnection, playlist_name: str
+    database: DuckDBPyConnection, playlist_name: str, num_tracks: int
 ) -> List[str]:
     logger = get_run_logger()
     logger.info(f"Getting tracks for playlist {playlist_name}.")
-    return get_tracks_for_playlist(database, playlist_name)
+    return get_tracks_for_playlist(
+        database, playlist_name, num_tracks=num_tracks
+    )
 
 
 @task(name="Get recommended tracks from Spotify")
@@ -101,6 +103,7 @@ def load_smart_playlists(
     client_id: Optional[str] = None,
     client_secret: Optional[str] = None,
     redirect_uri: Optional[str] = None,
+    num_tracks: int = 50,
 ):
     logger = get_run_logger()
     credentials: SpotifyCredentials | None = None
@@ -128,9 +131,11 @@ def load_smart_playlists(
     root_playlist_names = get_root_playlist_names_task(database)
 
     for root_playlist_name in root_playlist_names:
-        tracks = get_tracks_for_playlist_task(database, root_playlist_name)
+        tracks = get_tracks_for_playlist_task(
+            database, root_playlist_name, num_tracks=50
+        )
         validate_playlist_tracks_task(database, tracks)
-        num_recommended_tracks = 30 - len(tracks)
+        num_recommended_tracks = num_tracks + 5 - len(tracks)
         tracks += get_recommended_tracks_task(
             spotify, tracks, num_recommended_tracks
         )
@@ -139,7 +144,8 @@ def load_smart_playlists(
         )
         if playlist_id is None:
             playlist_id = create_playlist_on_spotify_task(
-                spotify, root_playlist_name
+                spotify,
+                root_playlist_name,
             )
         load_playlist_to_spotify_task(spotify, playlist_id, tracks)
         logger.info(f"Loaded new tracks for {root_playlist_name}.")

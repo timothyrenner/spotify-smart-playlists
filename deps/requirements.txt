@@ -129,6 +129,8 @@ google-resumable-media==2.4.1
     # via google-cloud-storage
 googleapis-common-protos==1.59.0
     # via google-api-core
+graphviz==0.20.1
+    # via prefect
 greenlet==2.0.2
     # via sqlalchemy
 griffe==0.26.0
@@ -205,7 +207,7 @@ pendulum==2.1.2
     # via prefect
 polars[pyarrow]==0.17.0
     # via spotify-smart-playlists (pyproject.toml)
-prefect==2.10.11
+prefect==2.13.4
     # via
     #   prefect-gcp
     #   prefect-shell
@@ -293,6 +295,10 @@ rich==13.3.3
     # via prefect
 rsa==4.9
     # via google-auth
+ruamel-yaml==0.17.35
+    # via prefect
+ruamel-yaml-clib==0.2.8
+    # via ruamel-yaml
 s3fs==2023.9.2
     # via spotify-smart-playlists (pyproject.toml)
 six==1.16.0
