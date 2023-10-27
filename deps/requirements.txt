@@ -21,7 +21,7 @@ alembic==1.10.3
     # via prefect
 antlr4-python3-runtime==4.9.3
     # via omegaconf
-anyio==3.6.2
+anyio==3.7.1
     # via
     #   httpcore
     #   prefect
@@ -79,12 +79,14 @@ dateparser==1.1.8
     # via prefect
 decorator==5.1.1
     # via gcsfs
+dnspython==2.4.2
+    # via email-validator
 docker==6.0.1
     # via prefect
 duckdb==0.7.1
     # via spotify-smart-playlists (pyproject.toml)
-fastapi==0.95.0
-    # via prefect
+email-validator==2.1.0.post1
+    # via pydantic
 frozenlist==1.3.3
     # via
     #   aiohttp
@@ -144,7 +146,9 @@ h2==4.1.0
 hpack==4.0.0
     # via h2
 httpcore==0.16.3
-    # via httpx
+    # via
+    #   httpx
+    #   prefect
 httplib2==0.22.0
     # via
     #   google-api-python-client
@@ -156,6 +160,7 @@ hyperframe==6.0.1
 idna==3.4
     # via
     #   anyio
+    #   email-validator
     #   requests
     #   rfc3986
     #   yarl
@@ -207,7 +212,7 @@ pendulum==2.1.2
     # via prefect
 polars[pyarrow]==0.17.0
     # via spotify-smart-playlists (pyproject.toml)
-prefect==2.13.4
+prefect==2.14.2
     # via
     #   prefect-gcp
     #   prefect-shell
@@ -230,10 +235,8 @@ pyasn1-modules==0.2.8
     # via google-auth
 pycparser==2.21
     # via cffi
-pydantic==1.10.7
-    # via
-    #   fastapi
-    #   prefect
+pydantic[email]==1.10.7
+    # via prefect
 pygments==2.14.0
     # via rich
 pynacl==1.5.0
@@ -249,6 +252,7 @@ python-dateutil==2.8.2
     #   dateparser
     #   kubernetes
     #   pendulum
+    #   prefect
     #   spotify-smart-playlists (pyproject.toml)
 python-dotenv==1.0.0
     # via spotify-smart-playlists (pyproject.toml)
@@ -314,14 +318,15 @@ sniffio==1.3.0
     #   asgi-lifespan
     #   httpcore
     #   httpx
+    #   prefect
 spotipy==2.23.0
     # via spotify-smart-playlists (pyproject.toml)
 sqlalchemy[asyncio]==1.4.47
     # via
     #   alembic
     #   prefect
-starlette==0.26.1
-    # via fastapi
+starlette==0.27.0
+    # via prefect
 text-unidecode==1.3
     # via python-slugify
 toml==0.10.2
@@ -341,6 +346,8 @@ tzdata==2023.3
     # via pytz-deprecation-shim
 tzlocal==4.3
     # via dateparser
+ujson==5.8.0
+    # via prefect
 uritemplate==4.1.1
     # via google-api-python-client
 urllib3==1.26.15
