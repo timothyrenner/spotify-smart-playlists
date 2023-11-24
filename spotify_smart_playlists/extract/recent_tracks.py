@@ -33,11 +33,6 @@ def pull_recent_tracks(
         # absolute hell to deal with. It's in UTC as it comes in so just
         # rip it off.
         played_at = parse(recent_track["played_at"]).replace(tzinfo=None)
-        # DEBUG
-        logger.info(f'payload ts: {recent_track["played_at"]}')
-        logger.info(f"parsed: {played_at}")
-        logger.info(f"max played: {max_played_at}")
-        # DEBUG END
         if played_at > max_played_at:
             recent_tracks.append(
                 TrackPlay(
