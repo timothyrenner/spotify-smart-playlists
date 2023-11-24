@@ -15,9 +15,9 @@ import polars as pl
 def get_latest_played_at_task(database: DuckDBPyConnection) -> datetime:
     logger = get_run_logger()
     logger.info("Getting latest played_at value from play_history table.")
-    return database.sql(
-        "SELECT MAX(played_at) AT TIME ZONE 'UTC' FROM play_history"
-    ).fetchone()[0]
+    return database.sql("SELECT MAX(played_at) FROM play_history").fetchone()[
+        0
+    ]
 
 
 @task(name="Get recently played tracks")

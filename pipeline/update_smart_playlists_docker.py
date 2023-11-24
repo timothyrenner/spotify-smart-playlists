@@ -39,12 +39,15 @@ def main(
     minio_local_dataset_storage.get_directory(
         from_path="spotify/data", local_path=str(data_dir)
     )
+    exported_data_dir = data_dir.absolute() / "export"
+    if not exported_data_dir.exists():
+        exported_data_dir.mkdir()
 
     logger.info("Executing pipeline.")
     update_smart_playlists(
         database_file=str(database_file),
         playlist_config_dir=playlist_config_dir,
-        exported_data_dir=data_dir,
+        exported_data_dir=exported_data_dir,
         cache_fernet_key=cache_fernet_key,
         client_id=client_id,
         client_secret=client_secret,

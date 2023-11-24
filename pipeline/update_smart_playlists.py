@@ -22,9 +22,9 @@ def export_table_to_parquet(
 
 @flow(name="Update smart playlists")
 def update_smart_playlists(
-    database_file: str = "spotify.db",
+    database_file: str = str(Path("data").absolute() / "spotify.db"),
     playlist_config_dir: Path = Path("playlists"),
-    exported_data_dir: Path = Path("exported_data"),
+    exported_data_dir: Path = Path("data").absolute() / "export",
     cache_fernet_key: Optional[str] = None,
     client_id: Optional[str] = None,
     client_secret: Optional[str] = None,
@@ -70,32 +70,17 @@ def update_smart_playlists(
     )
 
     with duckdb.connect(database_file) as db:
-        library_tracks_parquet_path = (
-            exported_data_dir / "library_tracks.parquet"
-        )
-        export_table_to_parquet(
-            "library_tracks", db, library_tracks_parquet_path
-        )
-        artist_genres_parquet_path = (
-            exported_data_dir / "artist_genres.parquet"
-        )
-        export_table_to_parquet(
-            "artist_genres", db, artist_genres_parquet_path
-        )
-        artists_parquet_path = exported_data_dir / "artists.parquet"
-        export_table_to_parquet("artists", db, artists_parquet_path)
-        track_artists_parquet_path = (
-            exported_data_dir / "track_artists.parquet"
-        )
-        export_table_to_parquet(
-            "track_artists", db, track_artists_parquet_path
-        )
-        track_audio_features_parquet_path = (
-            exported_data_dir / "track_audio_features.parquet"
-        )
-        export_table_to_parquet(
-            "track_audio_features", db, track_audio_features_parquet_path
-        )
+        for table in [
+            "library_tracks",
+            "artist_genres",
+            "artists",
+            "track_artists",
+            "track_audio_features",
+            "play_history",
+            "root_playlists",
+        ]:
+            table_path = exported_data_dir / f"{table}.parquet"
+            export_table_to_parquet(table, db, table_path)
 
 
 if __name__ == "__main__":

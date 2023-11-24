@@ -15,7 +15,7 @@ dependencies = [
     "omegaconf",
     "polars[pyarrow]",
     "typer",
-    "duckdb>=0.7",
+    "duckdb~=0.9",
     "python-dateutil",
     "prefect~=2.14",
     "prefect-gcp[cloud_storage]",
@@ -31,4 +31,8 @@ dev = ["black", "ruff", "mypy"]
 packages = ["spotify_smart_playlists"]
 
 [tool.black]
-line-length=79
+line-length = 79
+
+[tool.mypy]
+ignore_missing_imports = true
+disable_error_code = "call-overload"
